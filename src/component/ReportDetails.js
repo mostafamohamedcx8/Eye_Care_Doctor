@@ -11,28 +11,28 @@ import {
   Button,
   Spinner,
 } from "react-bootstrap";
-import Select from "react-select";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllpatient } from "../Redux/actions/Patientaction";
+import { getSpecificpatient } from "../Redux/actions/Patientaction";
 import notify from "../Hook/useNotification";
 import { CreateReport } from "../Redux/actions/Reportaction";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  validateEyeExamination,
   validateEyeHistory,
   validateMedicalHistory,
+  validateRightEyeSection,
   validateImageFiles,
+  validateLeftEyeSection,
 } from "../Validations/reportValidation";
 
 const ReportDetails = () => {
+  const { id } = useParams();
   const Navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("patient");
-  const [selectedPatientId, setSelectedPatientId] = useState("");
-  const [patientData, setPatientData] = useState(null);
+  const [activeTab, setActiveTab] = useState("history");
   const [innerTab, setInnerTab] = useState("medical");
   const [Rightimages, setRightImages] = useState([]);
   const [Leftimages, setLeftImages] = useState([]);
+  const [rightImageCaptureDate, setRightImageCaptureDate] = useState("");
+  const [leftImageCaptureDate, setLeftImageCaptureDate] = useState("");
 
   const [rightVisusCC, setRightVisusCC] = useState("");
   const [rightPreviousValue, setRightPreviousValue] = useState("");
@@ -99,72 +99,75 @@ const ReportDetails = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllpatient(100000000));
+    dispatch(getSpecificpatient(id));
   }, []);
 
-  const patients = useSelector((state) => state.allpatient.getpatient);
-
-  const handleSelectPatient = (id) => {
-    setSelectedPatientId(id);
-    if (!patients || !patients.data) return;
-
-    const data = patients.data.find((p) => p._id === id);
-    setPatientData(data);
-  };
-
-  console.log(selectedPatientId);
-
-  const patientOptions =
-    patients?.data?.map((patient) => ({
-      value: patient._id,
-      label: patient.name,
-    })) || [];
-
+  const patient = useSelector((state) => state.allpatient.getspecificpatient);
+  console.log(patient);
   const updateMedicalData = (diseaseName, field, value) => {
-    setHistoryData((prev) => {
-      const updated = prev.medical.filter((item) => item.name !== diseaseName);
-      const existing = prev.medical.find(
-        (item) => item.name === diseaseName
-      ) || {
-        name: diseaseName,
-        hasCondition: false,
-        appliesTo: null,
-      };
+    setHistoryData((prevData) => {
+      let medical = [...prevData.medical];
+      const index = medical.findIndex((item) => item.name === diseaseName);
 
-      const newItem = {
-        ...existing,
-        [field]: value,
-      };
+      if (index !== -1) {
+        // Disease exists
+        const updatedDisease = { ...medical[index], [field]: value };
 
-      return {
-        ...prev,
-        medical: [...updated, newItem],
-      };
+        // Remove if both are cleared
+        const shouldRemove =
+          !updatedDisease.hasCondition && !updatedDisease.appliesTo;
+
+        if (shouldRemove) {
+          medical.splice(index, 1); // Remove from list
+        } else {
+          medical[index] = updatedDisease; // Update value
+        }
+      } else {
+        // If not found and value is meaningful, add it
+        if (value) {
+          const newDisease = {
+            name: diseaseName,
+            hasCondition: field === "hasCondition" ? value : false,
+            appliesTo: field === "appliesTo" ? value : null,
+          };
+          medical.push(newDisease);
+        }
+      }
+
+      return { ...prevData, medical };
     });
   };
 
-  const updateEyeData = (disease, field, value) => {
+  const updateEyeData = (diseaseName, field, value) => {
     setHistoryData((prev) => {
-      const existingIndex = prev.eye.findIndex((item) => item.name === disease);
-      const updatedEye = [...prev.eye];
+      const eye = [...prev.eye];
+      const index = eye.findIndex((item) => item.name === diseaseName);
 
-      if (existingIndex >= 0) {
-        updatedEye[existingIndex] = {
-          ...updatedEye[existingIndex],
-          [field]: value,
-        };
+      if (index !== -1) {
+        // المرض موجود مسبقاً
+        const updatedDisease = { ...eye[index], [field]: value };
+
+        const shouldRemove =
+          !updatedDisease.hasCondition && !updatedDisease.appliesTo;
+
+        if (shouldRemove) {
+          eye.splice(index, 1); // احذف المرض
+        } else {
+          eye[index] = updatedDisease; // حدث البيانات
+        }
       } else {
-        updatedEye.push({
-          name: disease,
-          hasCondition: field === "hasCondition" ? value : false,
-          appliesTo: field === "appliesTo" ? value : null,
-        });
+        // المرض غير موجود، أضفه فقط لو القيمة مهمة
+        if (value) {
+          const newDisease = {
+            name: diseaseName,
+            hasCondition: field === "hasCondition" ? value : false,
+            appliesTo: field === "appliesTo" ? value : null,
+          };
+          eye.push(newDisease);
+        }
       }
 
-      return {
-        ...prev,
-        eye: updatedEye,
-      };
+      return { ...prev, eye };
     });
   };
 
@@ -237,7 +240,6 @@ const ReportDetails = () => {
 
   const resetFormFields = () => {
     setActiveTab("patient");
-    setSelectedPatientId("");
     setInnerTab("medical");
     setRightImages([]);
     setLeftImages([]);
@@ -263,14 +265,40 @@ const ReportDetails = () => {
     setLeftCornealThickness("");
     setLeftChamberAngle("");
     setLeftAmslerTestAbnormal(false);
-    setPatientData(null);
-
     setHistoryData({
       medical: [],
       eye: [],
     });
   };
 
+  const rightEyeData = {
+    rightVisusCC,
+    rightSphere,
+    rightCylinder,
+    rightAxis,
+    rightPreviousValue,
+    rightSince,
+    rightIntraocularPressure,
+    rightChamberAngle,
+    rightCornealThickness,
+    rightAmslerTestAbnormal,
+    Rightimages,
+    rightImageCaptureDate,
+  };
+  const leftEyeData = {
+    leftVisusCC,
+    leftSphere,
+    leftCylinder,
+    leftAxis,
+    leftPreviousValue,
+    leftSince,
+    leftIntraocularPressure,
+    leftChamberAngle,
+    leftCornealThickness,
+    leftAmslerTestAbnormal,
+    Leftimages,
+    leftImageCaptureDate,
+  };
   const HandelSendingData = async (e) => {
     e.preventDefault();
     const ItemRightImages = Array.from(
@@ -294,6 +322,7 @@ const ReportDetails = () => {
       notify("Some left eye images are not valid image files.", "error");
       return;
     }
+
     // تجهيز البيانات للـ validation
     const history = historyData;
     const eyeExamination = {
@@ -320,28 +349,35 @@ const ReportDetails = () => {
     };
 
     // التحقق من صحة البيانات
-    const isValid = validateEyeExamination({
-      history,
-      eyeExamination,
-    });
+    // const isValid = validateEyeExamination({
+    //   history,
+    //   eyeExamination,
+    // });
+    // if (!isValid) return;
+    const isValid = validateLeftEyeSection(leftEyeData);
     if (!isValid) return;
 
     const formData = new FormData();
 
-    formData.append("patient", selectedPatientId);
-    formData.append("optician", "68176bdabcbaa13a575f28ea");
     formData.append("eyeExamination.rightEye.visusCC", rightVisusCC);
     formData.append(
       "eyeExamination.rightEye.previousValue",
       rightPreviousValue
     );
-    formData.append("eyeExamination.rightEye.since", rightSince);
+    formData.append(
+      "eyeExamination.rightEye.since",
+      rightSince === "" ? "" : rightSince
+    );
     formData.append("eyeExamination.rightEye.sphere", rightSphere);
     formData.append("eyeExamination.rightEye.cylinder", rightCylinder);
     formData.append("eyeExamination.rightEye.axis", rightAxis);
     formData.append(
       "eyeExamination.rightEye.intraocularPressure",
       rightIntraocularPressure
+    );
+    formData.append(
+      "eyeExamination.rightEye.imageCaptureDate",
+      rightImageCaptureDate
     );
     formData.append(
       "eyeExamination.rightEye.cornealThickness",
@@ -355,13 +391,20 @@ const ReportDetails = () => {
 
     formData.append("eyeExamination.leftEye.visusCC", leftVisusCC);
     formData.append("eyeExamination.leftEye.previousValue", leftPreviousValue);
-    formData.append("eyeExamination.leftEye.since", leftSince);
+    formData.append(
+      "eyeExamination.leftEye.since",
+      leftSince === "" ? "" : leftSince
+    );
     formData.append("eyeExamination.leftEye.sphere", leftSphere);
     formData.append("eyeExamination.leftEye.cylinder", leftCylinder);
     formData.append("eyeExamination.leftEye.axis", leftAxis);
     formData.append(
       "eyeExamination.leftEye.intraocularPressure",
       leftIntraocularPressure
+    );
+    formData.append(
+      "eyeExamination.leftEye.imageCaptureDate",
+      leftImageCaptureDate
     );
     formData.append(
       "eyeExamination.leftEye.cornealThickness",
@@ -412,7 +455,7 @@ const ReportDetails = () => {
 
     setloading(true);
     setispress(true);
-    const res = await dispatch(CreateReport(formData));
+    const res = await dispatch(CreateReport(formData, id));
 
     console.log("Response:", res);
     setloading(false);
@@ -435,93 +478,127 @@ const ReportDetails = () => {
       }, 1500);
     }
   }, [loading, Report]);
+
+  const handleOuterTabSelect = (key) => {
+    if (key === activeTab) return;
+    if (activeTab === "history" && innerTab === "medical") {
+      const isValid = validateMedicalHistory(historyData);
+      if (!isValid) {
+        notify(
+          "Please complete the Medical History section before proceeding.",
+          "Warn"
+        );
+        return;
+      }
+    } else if (activeTab === "history" && innerTab === "eye") {
+      const isValid = validateEyeHistory(historyData);
+      if (!isValid) {
+        notify(
+          "Please complete the Eye History section before proceeding.",
+          "Warn"
+        );
+        return;
+      }
+    } else if (activeTab === "exam" && innerTab === "rightEye") {
+      const isValid = validateRightEyeSection(rightEyeData);
+      if (!isValid) {
+        notify(
+          "Please complete the Right Eye section before proceeding.",
+          "Warn"
+        );
+        return;
+      }
+    }
+    setActiveTab(key);
+    if (key === "exam") {
+      setInnerTab("rightEye");
+    }
+  };
+
+  const handleInnerTabSelect = (key) => {
+    if (key === innerTab) return;
+    if (activeTab === "history" && innerTab === "medical" && key === "eye") {
+      const isValid = validateMedicalHistory(historyData);
+      if (!isValid) {
+        notify(
+          "Please complete the Medical History section before switching.",
+          "Warn"
+        );
+        return;
+      }
+    } else if (
+      activeTab === "exam" &&
+      innerTab === "rightEye" &&
+      key === "leftEye"
+    ) {
+      const isValid = validateRightEyeSection(rightEyeData);
+      if (!isValid) {
+        notify(
+          "Please complete the Right Eye section before switching.",
+          "Warn"
+        );
+        return;
+      }
+    }
+    setInnerTab(key);
+  };
   return (
     <Container className="mt-5 mb-5">
       <h2 className="text-center mb-4 fw-bold button-color">
         Create Report for Patient
       </h2>
+      {patient && (
+        <Card className="mb-4">
+          <Card.Body>
+            <h5 className="text-center mb-4">Patient Information</h5>
+
+            <div className="patient-data-container">
+              <div className="patient-info-block">
+                <span className="patient-label">Name</span>
+                <span className="patient-data">
+                  {patient?.data?.firstname} {patient?.data?.lastname}
+                </span>
+              </div>
+
+              <div className="patient-info-block">
+                <span className="patient-label">Salutation</span>
+                <span className="patient-data">
+                  {patient?.data?.salutation}
+                </span>
+              </div>
+
+              <div className="patient-info-block">
+                <span className="patient-label">Date of Birth</span>
+                <span className="patient-data">
+                  {new Date(patient?.data?.dateOfBirth).toLocaleDateString(
+                    "de-DE"
+                  )}
+                </span>
+              </div>
+
+              <div className="patient-info-block">
+                <span className="patient-label">Ethnicity</span>
+                <span className="patient-data">{patient?.data?.ethnicity}</span>
+              </div>
+
+              <div className="patient-info-block">
+                <span className="patient-label">Patient ID</span>
+                <span className="patient-data">{patient?.data?._id}</span>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+      )}
 
       <Tabs
         activeKey={activeTab}
-        onSelect={(k) => {
-          if (k !== "patient" && !patientData) {
-            notify("Please select a patient first!", "error");
-            return;
-          }
-          setActiveTab(k);
-        }}
+        onSelect={handleOuterTabSelect}
         className="mb-3"
       >
-        <Tab eventKey="patient" title="Patient Info">
-          <Form>
-            <Form.Group>
-              <Form.Label>Select Patient</Form.Label>
-              <Select
-                options={patientOptions}
-                value={
-                  patientOptions.find(
-                    (option) => option.value === selectedPatientId
-                  ) || null
-                }
-                onChange={(selectedOption) =>
-                  handleSelectPatient(selectedOption?.value)
-                }
-                placeholder="Search patient..."
-                isSearchable
-              />
-            </Form.Group>
-
-            {patientData && (
-              <Card className="mt-3">
-                <Card.Body>
-                  <h5>Patient Information</h5>
-                  <p>
-                    <strong>Name:</strong>{" "}
-                    <span className="patient-data">{patientData.name}</span>
-                  </p>
-                  <p>
-                    <strong>Gender:</strong>{" "}
-                    <span className="patient-data">{patientData.gender}</span>
-                  </p>
-                  <p>
-                    <strong>Date of Birth:</strong>{" "}
-                    <span className="patient-data">
-                      {new Date(patientData.dateOfBirth).toLocaleDateString(
-                        "en-GB"
-                      )}
-                    </span>
-                  </p>
-                  <p>
-                    <strong>Ethnicity:</strong>{" "}
-                    <span className="patient-data">
-                      {patientData.ethnicity}
-                    </span>
-                  </p>
-                  <p>
-                    <strong>Patient ID:</strong>{" "}
-                    <span className="patient-data">{patientData._id}</span>
-                  </p>
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      if (!patientData) {
-                        notify("Please select a patient first!", "error");
-                        return;
-                      }
-                      setActiveTab("history");
-                    }}
-                  >
-                    Next
-                  </Button>
-                </Card.Body>
-              </Card>
-            )}
-          </Form>
-        </Tab>
         <Tab eventKey="history" title="History">
           <Tabs
             activeKey={innerTab}
-            onSelect={(k) => setInnerTab(k)}
+            onSelect={handleInnerTabSelect}
             className="mb-3"
           >
             <Tab eventKey="medical" title="Medical">
@@ -686,6 +763,7 @@ const ReportDetails = () => {
                   const isValid = validateEyeHistory(historyData);
                   if (isValid) {
                     setActiveTab("exam");
+                    setInnerTab("rightEye");
                   }
                 }}
               >
@@ -696,383 +774,451 @@ const ReportDetails = () => {
         </Tab>
 
         <Tab eventKey="exam" title="Eye Examination">
-          <Form>
+          <Tabs
+            activeKey={innerTab}
+            onSelect={handleInnerTabSelect}
+            className="mb-3"
+          >
             {/* Right Eye Card */}
-            <Card className="mb-4">
-              <Card.Body>
-                <h5 className="mb-3">Right Eye</h5>
+            <Tab eventKey="rightEye" title="Right Eye">
+              <Card className="mb-4">
+                <Card.Body>
+                  <h5 className="mb-3">Right Eye</h5>
 
-                <Row>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>
-                        Visus (CC) <span className="text-muted">(Decimal)</span>
-                      </Form.Label>
-                      <Form.Select
-                        value={rightVisusCC}
-                        onChange={(e) => setRightVisusCC(e.target.value)}
-                      >
-                        <option value="">Select Visus</option>
-                        <option>2.0 (20/10)</option>
-                        <option>1.6 (20/12)</option>
-                        <option>1.26 (20/16)</option>
-                        <option>1.0 (20/20)</option>
-                        <option>0.8 (20/25)</option>
-                        <option>0.63 (20/30)</option>
-                        <option>0.5 (20/40)</option>
-                        <option>0.4 (20/50)</option>
-                        <option>0.32 (20/60)</option>
-                        <option>0.25 (20/80)</option>
-                        <option>0.2 (20/100)</option>
-                        <option>0.16 (20/125)</option>
-                        <option>0.13 (20/160)</option>
-                        <option>0.1 (20/200)</option>
-                        <option>0.08 (20/250)</option>
-                        <option>0.063 (20/300)</option>
-                        <option>0.05 (20/400)</option>
-                        <option>0.04 (20/500)</option>
-                        <option>0.032 (20/600)</option>
-                        <option>0.025 (20/800)</option>
-                        <option>0.02 (20/1000)</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>
-                        Previous Value{" "}
-                        <span className="text-muted">(Decimal)</span>
-                      </Form.Label>
-                      <Form.Select
-                        value={rightPreviousValue}
-                        onChange={(e) => setRightPreviousValue(e.target.value)}
-                      >
-                        <option value="">Select Visus</option>
-                        <option>2.0 (20/10)</option>
-                        <option>1.6 (20/12)</option>
-                        <option>1.26 (20/16)</option>
-                        <option>1.0 (20/20)</option>
-                        <option>0.8 (20/25)</option>
-                        <option>0.63 (20/30)</option>
-                        <option>0.5 (20/40)</option>
-                        <option>0.4 (20/50)</option>
-                        <option>0.32 (20/60)</option>
-                        <option>0.25 (20/80)</option>
-                        <option>0.2 (20/100)</option>
-                        <option>0.16 (20/125)</option>
-                        <option>0.13 (20/160)</option>
-                        <option>0.1 (20/200)</option>
-                        <option>0.08 (20/250)</option>
-                        <option>0.063 (20/300)</option>
-                        <option>0.05 (20/400)</option>
-                        <option>0.04 (20/500)</option>
-                        <option>0.032 (20/600)</option>
-                        <option>0.025 (20/800)</option>
-                        <option>0.02 (20/1000)</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Since</Form.Label>
+                  <Row>
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>
+                          Visus (CC){" "}
+                          <span className="text-muted">(Decimal)</span>
+                        </Form.Label>
+                        <Form.Select
+                          value={rightVisusCC}
+                          onChange={(e) => setRightVisusCC(e.target.value)}
+                        >
+                          <option value="">Select Visus</option>
+                          <option>2.0 (20/10)</option>
+                          <option>1.6 (20/12)</option>
+                          <option>1.26 (20/16)</option>
+                          <option>1.0 (20/20)</option>
+                          <option>0.8 (20/25)</option>
+                          <option>0.63 (20/30)</option>
+                          <option>0.5 (20/40)</option>
+                          <option>0.4 (20/50)</option>
+                          <option>0.32 (20/60)</option>
+                          <option>0.25 (20/80)</option>
+                          <option>0.2 (20/100)</option>
+                          <option>0.16 (20/125)</option>
+                          <option>0.13 (20/160)</option>
+                          <option>0.1 (20/200)</option>
+                          <option>0.08 (20/250)</option>
+                          <option>0.063 (20/300)</option>
+                          <option>0.05 (20/400)</option>
+                          <option>0.04 (20/500)</option>
+                          <option>0.032 (20/600)</option>
+                          <option>0.025 (20/800)</option>
+                          <option>0.02 (20/1000)</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>
+                          Previous Value{" "}
+                          <span className="text-muted">(Decimal)</span>
+                        </Form.Label>
+                        <Form.Select
+                          value={rightPreviousValue}
+                          onChange={(e) =>
+                            setRightPreviousValue(e.target.value)
+                          }
+                        >
+                          <option value="">Select Visus</option>
+                          <option>2.0 (20/10)</option>
+                          <option>1.6 (20/12)</option>
+                          <option>1.26 (20/16)</option>
+                          <option>1.0 (20/20)</option>
+                          <option>0.8 (20/25)</option>
+                          <option>0.63 (20/30)</option>
+                          <option>0.5 (20/40)</option>
+                          <option>0.4 (20/50)</option>
+                          <option>0.32 (20/60)</option>
+                          <option>0.25 (20/80)</option>
+                          <option>0.2 (20/100)</option>
+                          <option>0.16 (20/125)</option>
+                          <option>0.13 (20/160)</option>
+                          <option>0.1 (20/200)</option>
+                          <option>0.08 (20/250)</option>
+                          <option>0.063 (20/300)</option>
+                          <option>0.05 (20/400)</option>
+                          <option>0.04 (20/500)</option>
+                          <option>0.032 (20/600)</option>
+                          <option>0.025 (20/800)</option>
+                          <option>0.02 (20/1000)</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>Since</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={rightSince}
+                          onChange={(e) => setRightSince(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="text-form pb-2 pt-2">
+                    {" "}
+                    Upload Images (Right Eye)
+                  </div>
+
+                  <MultiImageInput
+                    className="multi-image-input__image"
+                    images={Rightimages}
+                    setImages={setRightImages}
+                    theme={"light"}
+                    max={8}
+                    cropConfig={{ crop, ruleOfThirds: true }}
+                  />
+                  <Form.Text className="text-muted">
+                    Please upload high-quality images. Blurry images may affect
+                    diagnosis.
+                  </Form.Text>
+                  <Row className="mt-3">
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>Image Capture Date</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={rightImageCaptureDate}
+                          onChange={(e) =>
+                            setRightImageCaptureDate(e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row className="mt-3">
+                    <Col md={4}>
+                      <Form.Label>Sphere</Form.Label>
                       <Form.Control
-                        type="date"
-                        value={rightSince}
-                        onChange={(e) => setRightSince(e.target.value)}
+                        placeholder="(+/- 0.0 - 25.0)"
+                        type="number"
+                        step="0.25"
+                        min="-25.0"
+                        max="25.0"
+                        value={rightSphere}
+                        onChange={(e) => setRightSphere(e.target.value)}
                       />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <div className="text-form pb-2 pt-2">
-                  {" "}
-                  Upload Images (Right Eye)
-                </div>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Label>Cylinder</Form.Label>
+                      <Form.Control
+                        placeholder="(+/-)"
+                        type="number"
+                        step="0.25"
+                        value={rightCylinder}
+                        onChange={(e) => setRightCylinder(e.target.value)}
+                      />
+                    </Col>
+                    <Col md={4}>
+                      <Form.Label>Axis</Form.Label>
+                      <Form.Control
+                        placeholder="Axis"
+                        type="number"
+                        min="0"
+                        max="180"
+                        value={rightAxis}
+                        onChange={(e) => setRightAxis(e.target.value)}
+                      />
+                    </Col>
+                  </Row>
 
-                <MultiImageInput
-                  className="multi-image-input__image"
-                  images={Rightimages}
-                  setImages={setRightImages}
-                  theme={"light"}
-                  max={8}
-                  cropConfig={{ crop, ruleOfThirds: true }}
-                />
-                <Form.Text className="text-muted">
-                  Please upload high-quality images. Blurry images may affect
-                  diagnosis.
-                </Form.Text>
+                  <Row className="mt-3">
+                    <Col>
+                      <Form.Label>Intraocular Pressure (mmHg)</Form.Label>
+                      <Form.Select
+                        value={rightIntraocularPressure}
+                        onChange={(e) =>
+                          setRightIntraocularPressure(e.target.value)
+                        }
+                      >
+                        <option value="">Select</option>
+                        {[...Array(91)].map((_, i) => (
+                          <option key={i}>{i}</option>
+                        ))}
+                        <option>Not Measurable</option>
+                      </Form.Select>
+                    </Col>
+                    <Col>
+                      <Form.Label>Corneal Thickness</Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={rightCornealThickness}
+                        onChange={(e) =>
+                          setRightCornealThickness(e.target.value)
+                        }
+                      />
+                    </Col>
+                    <Col>
+                      <Form.Label>Anterior Chamber Angle</Form.Label>
+                      <Form.Select
+                        value={rightChamberAngle}
+                        onChange={(e) => setRightChamberAngle(e.target.value)}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="Narrow">Narrow</option>
+                        <option value="Within Normal Limits">
+                          Within Normal Limits
+                        </option>
+                        <option value="White">White</option>
+                      </Form.Select>
+                    </Col>
+                  </Row>
 
-                <Row className="mt-3">
-                  <Col md={4}>
-                    <Form.Label>Sphere</Form.Label>
-                    <Form.Control
-                      placeholder="(+/- 0.0 - 25.0)"
-                      type="number"
-                      step="0.25"
-                      min="-25.0"
-                      max="25.0"
-                      value={rightSphere}
-                      onChange={(e) => setRightSphere(e.target.value)}
-                    />
-                  </Col>
-                  <Col md={4}>
-                    <Form.Label>Cylinder</Form.Label>
-                    <Form.Control
-                      placeholder="(+/-)"
-                      type="number"
-                      step="0.25"
-                      value={rightCylinder}
-                      onChange={(e) => setRightCylinder(e.target.value)}
-                    />
-                  </Col>
-                  <Col md={4}>
-                    <Form.Label>Axis</Form.Label>
-                    <Form.Control
-                      placeholder="Axis"
-                      type="number"
-                      min="0"
-                      max="180"
-                      value={rightAxis}
-                      onChange={(e) => setRightAxis(e.target.value)}
-                    />
-                  </Col>
-                </Row>
-
-                <Row className="mt-3">
-                  <Col>
-                    <Form.Label>Intraocular Pressure (mmHg)</Form.Label>
-                    <Form.Select
-                      value={rightIntraocularPressure}
-                      onChange={(e) =>
-                        setRightIntraocularPressure(e.target.value)
-                      }
-                    >
-                      <option value="">Select</option>
-                      {[...Array(91)].map((_, i) => (
-                        <option key={i}>{i}</option>
-                      ))}
-                      <option>Not Measurable</option>
-                    </Form.Select>
-                  </Col>
-                  <Col>
-                    <Form.Label>Corneal Thickness</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={rightChamberAngle}
-                      onChange={(e) => setRightChamberAngle(e.target.value)}
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Label>Chamber Angle</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={rightCornealThickness}
-                      onChange={(e) => setRightCornealThickness(e.target.value)}
-                    />
-                  </Col>
-                </Row>
-
-                <Form.Check
-                  className="mt-2"
-                  type="checkbox"
-                  label="Amsler Test Abnormal"
-                  checked={rightAmslerTestAbnormal}
-                  onChange={(e) => setRightAmslerTestAbnormal(e.target.checked)}
-                />
-              </Card.Body>
-            </Card>
-
+                  <Form.Check
+                    className="mt-2"
+                    type="checkbox"
+                    label="Amsler Test Abnormal"
+                    checked={rightAmslerTestAbnormal}
+                    onChange={(e) =>
+                      setRightAmslerTestAbnormal(e.target.checked)
+                    }
+                  />
+                  <Button
+                    variant="primary"
+                    className="mt-4"
+                    onClick={() => {
+                      const isValid = validateRightEyeSection(rightEyeData);
+                      if (!isValid) return;
+                      setInnerTab("leftEye");
+                    }}
+                  >
+                    Next
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Tab>
             {/* Left Eye Card */}
-            <Card className="mb-4">
-              <Card.Body>
-                <h5 className="mb-3">Left Eye</h5>
+            <Tab eventKey="leftEye" title="Left Eye">
+              <Card className="mb-4">
+                <Card.Body>
+                  <h5 className="mb-3">Left Eye</h5>
 
-                <Row>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>
-                        Visus (CC) <span className="text-muted">(Decimal)</span>
-                      </Form.Label>
-                      <Form.Select
-                        value={leftVisusCC}
-                        onChange={(e) => setLeftVisusCC(e.target.value)}
-                      >
-                        <option value="">Select Visus</option>
-                        <option>2.0 (20/10)</option>
-                        <option>1.6 (20/12)</option>
-                        <option>1.26 (20/16)</option>
-                        <option>1.0 (20/20)</option>
-                        <option>0.8 (20/25)</option>
-                        <option>0.63 (20/30)</option>
-                        <option>0.5 (20/40)</option>
-                        <option>0.4 (20/50)</option>
-                        <option>0.32 (20/60)</option>
-                        <option>0.25 (20/80)</option>
-                        <option>0.2 (20/100)</option>
-                        <option>0.16 (20/125)</option>
-                        <option>0.13 (20/160)</option>
-                        <option>0.1 (20/200)</option>
-                        <option>0.08 (20/250)</option>
-                        <option>0.063 (20/300)</option>
-                        <option>0.05 (20/400)</option>
-                        <option>0.04 (20/500)</option>
-                        <option>0.032 (20/600)</option>
-                        <option>0.025 (20/800)</option>
-                        <option>0.02 (20/1000)</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>
-                        Previous Value{" "}
-                        <span className="text-muted">(Decimal)</span>
-                      </Form.Label>
-                      <Form.Select
-                        value={leftPreviousValue}
-                        onChange={(e) => setLeftPreviousValue(e.target.value)}
-                      >
-                        <option value="">Select Visus</option>
-                        <option>2.0 (20/10)</option>
-                        <option>1.6 (20/12)</option>
-                        <option>1.26 (20/16)</option>
-                        <option>1.0 (20/20)</option>
-                        <option>0.8 (20/25)</option>
-                        <option>0.63 (20/30)</option>
-                        <option>0.5 (20/40)</option>
-                        <option>0.4 (20/50)</option>
-                        <option>0.32 (20/60)</option>
-                        <option>0.25 (80)</option>
-                        <option>0.2 (20/100)</option>
-                        <option>0.16 (20/125)</option>
-                        <option>0.13 (20/160)</option>
-                        <option>0.1 (20/200)</option>
-                        <option>0.08 (20/250)</option>
-                        <option>0.063 (20/300)</option>
-                        <option>0.05 (20/400)</option>
-                        <option>0.04 (20/500)</option>
-                        <option>0.032 (20/600)</option>
-                        <option>0.025 (20/800)</option>
-                        <option>0.02 (20/1000)</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Since</Form.Label>
+                  <Row>
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>
+                          Visus (CC){" "}
+                          <span className="text-muted">(Decimal)</span>
+                        </Form.Label>
+                        <Form.Select
+                          value={leftVisusCC}
+                          onChange={(e) => setLeftVisusCC(e.target.value)}
+                        >
+                          <option value="">Select Visus</option>
+                          <option>2.0 (20/10)</option>
+                          <option>1.6 (20/12)</option>
+                          <option>1.26 (20/16)</option>
+                          <option>1.0 (20/20)</option>
+                          <option>0.8 (20/25)</option>
+                          <option>0.63 (20/30)</option>
+                          <option>0.5 (20/40)</option>
+                          <option>0.4 (20/50)</option>
+                          <option>0.32 (20/60)</option>
+                          <option>0.25 (20/80)</option>
+                          <option>0.2 (20/100)</option>
+                          <option>0.16 (20/125)</option>
+                          <option>0.13 (20/160)</option>
+                          <option>0.1 (20/200)</option>
+                          <option>0.08 (20/250)</option>
+                          <option>0.063 (20/300)</option>
+                          <option>0.05 (20/400)</option>
+                          <option>0.04 (20/500)</option>
+                          <option>0.032 (20/600)</option>
+                          <option>0.025 (20/800)</option>
+                          <option>0.02 (20/1000)</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>
+                          Previous Value{" "}
+                          <span className="text-muted">(Decimal)</span>
+                        </Form.Label>
+                        <Form.Select
+                          value={leftPreviousValue}
+                          onChange={(e) => setLeftPreviousValue(e.target.value)}
+                        >
+                          <option value="">Select Visus</option>
+                          <option>2.0 (20/10)</option>
+                          <option>1.6 (20/12)</option>
+                          <option>1.26 (20/16)</option>
+                          <option>1.0 (20/20)</option>
+                          <option>0.8 (20/25)</option>
+                          <option>0.63 (20/30)</option>
+                          <option>0.5 (20/40)</option>
+                          <option>0.4 (20/50)</option>
+                          <option>0.32 (20/60)</option>
+                          <option>0.25 (80)</option>
+                          <option>0.2 (20/100)</option>
+                          <option>0.16 (20/125)</option>
+                          <option>0.13 (20/160)</option>
+                          <option>0.1 (20/200)</option>
+                          <option>0.08 (20/250)</option>
+                          <option>0.063 (20/300)</option>
+                          <option>0.05 (20/400)</option>
+                          <option>0.04 (20/500)</option>
+                          <option>0.032 (20/600)</option>
+                          <option>0.025 (20/800)</option>
+                          <option>0.02 (20/1000)</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>Since</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={leftSince}
+                          onChange={(e) => setLeftSince(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <div className="text-form pb-2 pt-2">
+                    {" "}
+                    Upload Images (Left Eye)
+                  </div>
+
+                  <MultiImageInput
+                    images={Leftimages}
+                    setImages={setLeftImages}
+                    theme={"light"}
+                    max={8}
+                    cropConfig={{ crop, ruleOfThirds: true }}
+                  />
+                  <Form.Text className="text-muted">
+                    Please upload high-quality images. Blurry images may affect
+                    diagnosis.
+                  </Form.Text>
+                  <Row className="mt-3">
+                    <Col md={4}>
+                      <Form.Group>
+                        <Form.Label>Image Capture Date</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={leftImageCaptureDate}
+                          onChange={(e) =>
+                            setLeftImageCaptureDate(e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Row className="mt-3">
+                    <Col md={4}>
+                      <Form.Label>Sphere</Form.Label>
                       <Form.Control
-                        type="date"
-                        value={leftSince}
-                        onChange={(e) => setLeftSince(e.target.value)}
+                        placeholder="(+/- 0.0 - 25.0)"
+                        type="number"
+                        step="0.25"
+                        min="-25.0"
+                        max="25.0"
+                        value={leftSphere}
+                        onChange={(e) => setLeftSphere(e.target.value)}
                       />
-                    </Form.Group>
-                  </Col>
-                </Row>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Label>Cylinder</Form.Label>
+                      <Form.Control
+                        placeholder="(+/-)"
+                        type="number"
+                        step="0.25"
+                        value={leftCylinder}
+                        onChange={(e) => setLeftCylinder(e.target.value)}
+                      />
+                    </Col>
+                    <Col md={4}>
+                      <Form.Label>Axis</Form.Label>
+                      <Form.Control
+                        placeholder="Axis"
+                        type="number"
+                        min="0"
+                        max="180"
+                        value={leftAxis}
+                        onChange={(e) => setLeftAxis(e.target.value)}
+                      />
+                    </Col>
+                  </Row>
 
-                <div className="text-form pb-2 pt-2">
-                  {" "}
-                  Upload Images (Left Eye)
-                </div>
+                  <Row className="mt-3">
+                    <Col>
+                      <Form.Label>Intraocular Pressure (mmHg)</Form.Label>
+                      <Form.Select
+                        value={leftIntraocularPressure}
+                        onChange={(e) =>
+                          setLeftIntraocularPressure(e.target.value)
+                        }
+                      >
+                        <option value="">Select</option>
+                        {[...Array(91)].map((_, i) => (
+                          <option key={i}>{i}</option>
+                        ))}
+                        <option>Not Measurable</option>
+                      </Form.Select>
+                    </Col>
+                    <Col>
+                      <Form.Label>Corneal Thickness</Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={leftCornealThickness}
+                        onChange={(e) =>
+                          setLeftCornealThickness(e.target.value)
+                        }
+                      />
+                    </Col>
+                    <Col>
+                      <Form.Label>Anterior Chamber Angle</Form.Label>
+                      <Form.Select
+                        value={leftChamberAngle}
+                        onChange={(e) => setLeftChamberAngle(e.target.value)}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="Narrow">Narrow</option>
+                        <option value="Within Normal Limits">
+                          Within Normal Limits
+                        </option>
+                        <option value="White">White</option>
+                      </Form.Select>
+                    </Col>
+                  </Row>
 
-                <MultiImageInput
-                  images={Leftimages}
-                  setImages={setLeftImages}
-                  theme={"light"}
-                  max={8}
-                  cropConfig={{ crop, ruleOfThirds: true }}
-                />
-                <Form.Text className="text-muted">
-                  Please upload high-quality images. Blurry images may affect
-                  diagnosis.
-                </Form.Text>
-
-                <Row className="mt-3">
-                  <Col md={4}>
-                    <Form.Label>Sphere</Form.Label>
-                    <Form.Control
-                      placeholder="(+/- 0.0 - 25.0)"
-                      type="number"
-                      step="0.25"
-                      min="-25.0"
-                      max="25.0"
-                      value={leftSphere}
-                      onChange={(e) => setLeftSphere(e.target.value)}
-                    />
-                  </Col>
-                  <Col md={4}>
-                    <Form.Label>Cylinder</Form.Label>
-                    <Form.Control
-                      placeholder="(+/-)"
-                      type="number"
-                      step="0.25"
-                      value={leftCylinder}
-                      onChange={(e) => setLeftCylinder(e.target.value)}
-                    />
-                  </Col>
-                  <Col md={4}>
-                    <Form.Label>Axis</Form.Label>
-                    <Form.Control
-                      placeholder="Axis"
-                      type="number"
-                      min="0"
-                      max="180"
-                      value={leftAxis}
-                      onChange={(e) => setLeftAxis(e.target.value)}
-                    />
-                  </Col>
-                </Row>
-
-                <Row className="mt-3">
-                  <Col>
-                    <Form.Label>Intraocular Pressure (mmHg)</Form.Label>
-                    <Form.Select
-                      value={leftIntraocularPressure}
-                      onChange={(e) =>
-                        setLeftIntraocularPressure(e.target.value)
-                      }
-                    >
-                      <option value="">Select</option>
-                      {[...Array(91)].map((_, i) => (
-                        <option key={i}>{i}</option>
-                      ))}
-                      <option>Not Measurable</option>
-                    </Form.Select>
-                  </Col>
-                  <Col>
-                    <Form.Label>Corneal Thickness</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={leftChamberAngle}
-                      onChange={(e) => setLeftChamberAngle(e.target.value)}
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Label>Chamber Angle</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={leftCornealThickness}
-                      onChange={(e) => setLeftCornealThickness(e.target.value)}
-                    />
-                  </Col>
-                </Row>
-
-                <Form.Check
-                  className="mt-2"
-                  type="checkbox"
-                  label="Amsler Test Abnormal"
-                  checked={leftAmslerTestAbnormal}
-                  onChange={(e) => setLeftAmslerTestAbnormal(e.target.checked)}
-                />
-              </Card.Body>
-            </Card>
-
-            <Button
-              variant="primary"
-              className="mt-2"
-              onClick={HandelSendingData}
-            >
-              Save Data
-            </Button>
-          </Form>
+                  <Form.Check
+                    className="mt-2"
+                    type="checkbox"
+                    label="Amsler Test Abnormal"
+                    checked={leftAmslerTestAbnormal}
+                    onChange={(e) =>
+                      setLeftAmslerTestAbnormal(e.target.checked)
+                    }
+                  />
+                </Card.Body>
+              </Card>
+              <Button
+                variant="primary"
+                className="mt-2"
+                onClick={HandelSendingData}
+              >
+                Save Data
+              </Button>
+            </Tab>
+          </Tabs>
         </Tab>
       </Tabs>
       {ispress ? (

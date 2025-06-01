@@ -11,9 +11,9 @@ const PatientTab = () => {
   const dispatch = useDispatch();
 
   const res = useSelector((state) => state.allpatient.patient);
-  console.log(res);
-  const [name, setName] = useState("");
-  const [gender, setGender] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [salutation, setSalutation] = useState("");
   const [dateOfBirth, setDob] = useState("");
   const [ethnicity, setEthnicity] = useState("");
   const [loading, setloading] = useState(true);
@@ -24,16 +24,18 @@ const PatientTab = () => {
 
     // validate first
     const isValid = validatePatientForm({
-      name,
-      gender,
+      firstname,
+      lastname,
+      salutation,
       dateOfBirth,
       ethnicity,
     });
     if (!isValid) return; // لو في خطأ وقف التنفيذ
 
     const patientData = {
-      name,
-      gender,
+      firstname,
+      lastname,
+      salutation,
       dateOfBirth,
       ethnicity,
     };
@@ -48,11 +50,13 @@ const PatientTab = () => {
   useEffect(() => {
     if (loading === false) {
       if (res.status === 201) {
+        const id = res?.data?.data?._id;
         notify("Patient created successfully.", "success");
-        navigate("/Examination");
+        navigate(`/Examination/${id}`);
       }
-      setName("");
-      setGender("");
+      setFirstname("");
+      setLastname("");
+      setSalutation("");
       setDob("");
       setEthnicity("");
       setloading(true);
@@ -71,28 +75,41 @@ const PatientTab = () => {
       <Row>
         <Col>
           <Form.Group>
-            <Form.Label>Name</Form.Label>
-
+            <Form.Label>First Name</Form.Label>
             <Form.Control
-              placeholder="Enter full name"
+              placeholder="Enter First Name"
               required
-              onChange={(e) => setName(e.target.value)}
-              value={name}
+              onChange={(e) => setFirstname(e.target.value)}
+              value={firstname}
+            />
+          </Form.Group>
+        </Col>
+        <Col>
+          <Form.Group>
+            <Form.Label>Last Name</Form.Label>
+            <Form.Control
+              placeholder="Enter Last Name"
+              required
+              onChange={(e) => setLastname(e.target.value)}
+              value={lastname}
             />
           </Form.Group>
         </Col>
         <Col>
           <Form.Group className="mb-3">
-            <Form.Label>Gender</Form.Label>
-
+            <Form.Label>Salutation</Form.Label>
             <Form.Select
               required
-              onChange={(e) => setGender(e.target.value)}
-              value={gender}
+              onChange={(e) => setSalutation(e.target.value)}
+              value={salutation}
             >
-              <option value="">Select gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
+              <option value="" disabled hidden>
+                Select Salutation
+              </option>
+              <option value="Mr">Mr</option>
+              <option value="Mrs">Mrs</option>
+              <option value="Ms">Ms</option>
+              <option value="Mx">Mx</option>
             </Form.Select>
           </Form.Group>
         </Col>
@@ -119,7 +136,9 @@ const PatientTab = () => {
               onChange={(e) => setEthnicity(e.target.value)}
               value={ethnicity}
             >
-              <option value="">Select ethnicity</option>
+              <option value="" disabled hidden>
+                Select ethnicity
+              </option>
               <optgroup label="Asian or Asian British">
                 <option value="Indian">Indian</option>
                 <option value="Pakistani">Pakistani</option>
@@ -176,11 +195,6 @@ const PatientTab = () => {
         <Col>
           <Button variant="primary" onClick={handelSubmit}>
             Create Patient
-          </Button>
-        </Col>
-        <Col>
-          <Button variant="success" href="/Examination">
-            Create Report for Existing Patient
           </Button>
         </Col>
       </Row>

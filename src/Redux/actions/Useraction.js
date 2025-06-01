@@ -9,7 +9,7 @@ import {
   UPDATE_USER_PROFILE,
   UPDATELOGGEDUSERPASSWORD,
 } from "../type";
-import { InsertData } from "../../Hooks/useInsertData";
+import { InsertData, InsertDataWithImage } from "../../Hooks/useInsertData";
 import {
   updateData,
   UpdateDataWithImage,
@@ -18,18 +18,20 @@ import {
 
 export const CreateUser = (MYdata) => async (dispatch) => {
   try {
-    const response = await InsertData(`/api/v1/auth/signup`, MYdata);
+    const response = await InsertDataWithImage(`/api/v1/auth/signup`, MYdata);
 
     dispatch({
       type: CREATEUSER,
       payload: response,
       loading: true,
     });
+    return response;
   } catch (e) {
     dispatch({
       type: CREATEUSER,
       payload: e.response,
     });
+    return e.response;
   }
 };
 

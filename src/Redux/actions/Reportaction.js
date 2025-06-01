@@ -8,10 +8,12 @@ import {
 import { InsertDataWithImage } from "../../Hooks/useInsertData";
 import { useGetDataToken } from "../../Hooks/useGetData";
 import DeleteData from "../../Hooks/useDeleteData";
-export const CreateReport = (FormatData) => async (dispatch) => {
+export const CreateReport = (FormatData, id) => async (dispatch) => {
   try {
-    const response = await InsertDataWithImage(`/api/v1/report`, FormatData);
-
+    const response = await InsertDataWithImage(
+      `/api/v1/report/${id}`,
+      FormatData
+    );
     dispatch({
       type: CREATEREPORT,
       payload: response,

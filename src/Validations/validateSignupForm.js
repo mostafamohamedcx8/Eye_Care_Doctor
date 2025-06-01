@@ -15,10 +15,12 @@ export const validateSignupForm = ({
   dateOfBirthDay,
   dateOfBirthMonth,
   dateOfBirthYear,
-  gender,
+  salutation,
   state,
   city,
+  Specialty,
   fullAddress,
+  postalCode,
 }) => {
   if (!firstname.trim()) {
     notify("First name is required", "warn");
@@ -32,6 +34,7 @@ export const validateSignupForm = ({
     notify("Email is required", "warn");
     return false;
   }
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     notify("Invalid email format", "warn");
@@ -49,12 +52,16 @@ export const validateSignupForm = ({
     notify("Passwords do not match", "warn");
     return false;
   }
+  if (!Specialty) {
+    notify("Specialty is required", "warn");
+    return false;
+  }
   if (!dateOfBirthDay || !dateOfBirthMonth || !dateOfBirthYear) {
     notify("Complete Date of Birth is required", "warn");
     return false;
   }
-  if (!gender) {
-    notify("Gender is required", "warn");
+  if (!salutation) {
+    notify("salutation is required", "warn");
     return false;
   }
   if (!state) {
@@ -63,6 +70,10 @@ export const validateSignupForm = ({
   }
   if (!city) {
     notify("City is required", "warn");
+    return false;
+  }
+  if (!postalCode || !/^\d{5}$/.test(postalCode)) {
+    notify("Postal Code must be exactly 5 digits", "warn");
     return false;
   }
   if (!fullAddress.trim()) {
@@ -90,12 +101,6 @@ export const validateLogin = ({ email, password, role }) => {
   // فحص كلمة المرور
   if (!password || password.length < 6) {
     notify("Password must be at least 6 characters", "warn");
-    return false;
-  }
-
-  // فحص الدور
-  if (!role) {
-    notify("Please select a role", "warn");
     return false;
   }
 

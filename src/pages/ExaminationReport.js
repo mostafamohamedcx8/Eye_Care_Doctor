@@ -8,8 +8,10 @@ import html2canvas from "html2canvas";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSpecificReport } from "./../Redux/actions/Reportaction";
+import { useNavigate } from "react-router-dom";
 
 const PatientReport = () => {
+  const navigate = useNavigate();
   const userFromStorage = JSON.parse(localStorage.getItem("user"));
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -51,6 +53,35 @@ const PatientReport = () => {
   const Report = ReportData.data || [];
   console.log(Report);
 
+  const displayValue = (value) => {
+    return value !== undefined && value !== null && value !== "" ? (
+      value
+    ) : (
+      <span style={{ color: "red" }}>X</span>
+    );
+  };
+
+  const displayDate = (date) => {
+    return date ? (
+      new Date(date).toLocaleDateString("de-DE")
+    ) : (
+      <span style={{ color: "red" }}>X</span>
+    );
+  };
+
+  // دالة لعرض نعم/لا أو X حمراء لو مش موجود
+  const displayBoolean = (value) => {
+    return value !== undefined ? (
+      value ? (
+        "Yes"
+      ) : (
+        "No"
+      )
+    ) : (
+      <span style={{ color: "red" }}>X</span>
+    );
+  };
+
   return (
     <>
       <Header />
@@ -71,10 +102,11 @@ const PatientReport = () => {
               {/* Right Column */}
               <Col md={6}>
                 <div className="mb-2">
-                  <strong>Name:</strong> {Report?.patient?.name}
+                  <strong>Name:</strong> {Report?.patient?.firstname}{" "}
+                  {Report?.patient?.lastname}
                 </div>
                 <div className="mb-2">
-                  <strong>Gender:</strong> {Report?.patient?.gender}
+                  <strong>Salutation:</strong> {Report?.patient?.salutation}
                 </div>
                 <div className="mb-2">
                   <strong>Ethnicity:</strong> {Report?.patient?.ethnicity}
@@ -87,11 +119,13 @@ const PatientReport = () => {
                 </div>
                 <div className="mb-2">
                   <strong>Date of Birth:</strong>{" "}
-                  {new Date(Report?.patient?.dateOfBirth).toLocaleDateString()}
+                  {new Date(Report?.patient?.dateOfBirth).toLocaleDateString(
+                    "de-DE"
+                  )}
                 </div>
                 <div className="mb-2">
                   <strong>Date Of Examination:</strong>{" "}
-                  {new Date(Report?.createdAt).toLocaleDateString()}
+                  {new Date(Report?.createdAt).toLocaleDateString("de-DE")}
                 </div>
               </Col>
             </Row>
@@ -150,7 +184,6 @@ const PatientReport = () => {
           </Card.Body>
         </Card>
 
-        {/* Right Eye Exam */}
         <Card className="mb-4">
           <Card.Header className="custom-card-header">
             Right Eye Examination
@@ -159,52 +192,55 @@ const PatientReport = () => {
             <Row>
               <Col>
                 <strong>Visus (CC):</strong>{" "}
-                {Report?.eyeExamination?.rightEye?.visusCC}
+                {displayValue(Report?.eyeExamination?.rightEye?.visusCC)}
               </Col>
               <Col>
                 <strong>Previous Value:</strong>{" "}
-                {Report?.eyeExamination?.rightEye?.previousValue}
+                {displayValue(Report?.eyeExamination?.rightEye?.previousValue)}
               </Col>
               <Col>
                 <strong>Since:</strong>{" "}
-                {new Date(
-                  Report?.eyeExamination?.rightEye?.since
-                ).toLocaleDateString()}
+                {displayDate(Report?.eyeExamination?.rightEye?.since)}
               </Col>
             </Row>
             <Row className="mt-2">
               <Col>
                 <strong>Sphere:</strong>{" "}
-                {Report?.eyeExamination?.rightEye?.sphere}
+                {displayValue(Report?.eyeExamination?.rightEye?.sphere)}
               </Col>
               <Col>
                 <strong>Cylinder:</strong>{" "}
-                {Report?.eyeExamination?.rightEye?.cylinder}
+                {displayValue(Report?.eyeExamination?.rightEye?.cylinder)}
               </Col>
               <Col>
-                <strong>Axis:</strong> {Report?.eyeExamination?.rightEye?.axis}
+                <strong>Axis:</strong>{" "}
+                {displayValue(Report?.eyeExamination?.rightEye?.axis)}
               </Col>
             </Row>
             <Row className="mt-2">
               <Col>
                 <strong>Intraocular Pressure:</strong>{" "}
-                {Report?.eyeExamination?.rightEye?.intraocularPressure}
+                {displayValue(
+                  Report?.eyeExamination?.rightEye?.intraocularPressure
+                )}
               </Col>
               <Col>
                 <strong>Corneal Thickness:</strong>{" "}
-                {Report?.eyeExamination?.rightEye?.cornealThickness}
+                {displayValue(
+                  Report?.eyeExamination?.rightEye?.cornealThickness
+                )}
               </Col>
               <Col>
                 <strong>Chamber Angle:</strong>{" "}
-                {Report?.eyeExamination?.rightEye?.chamberAngle}
+                {displayValue(Report?.eyeExamination?.rightEye?.chamberAngle)}
               </Col>
             </Row>
             <Row className="mt-2">
               <Col>
                 <strong>Amsler Test Abnormal:</strong>{" "}
-                {Report?.eyeExamination?.rightEye?.amslerTestAbnormal
-                  ? "Yes"
-                  : "No"}
+                {displayBoolean(
+                  Report?.eyeExamination?.rightEye?.amslerTestAbnormal
+                )}
               </Col>
             </Row>
           </Card.Body>
@@ -219,52 +255,55 @@ const PatientReport = () => {
             <Row>
               <Col>
                 <strong>Visus (CC):</strong>{" "}
-                {Report?.eyeExamination?.leftEye?.visusCC}
+                {displayValue(Report?.eyeExamination?.leftEye?.visusCC)}
               </Col>
               <Col>
                 <strong>Previous Value:</strong>{" "}
-                {Report?.eyeExamination?.leftEye?.previousValue}
+                {displayValue(Report?.eyeExamination?.leftEye?.previousValue)}
               </Col>
               <Col>
                 <strong>Since:</strong>{" "}
-                {new Date(
-                  Report?.eyeExamination?.leftEye?.since
-                ).toLocaleDateString()}
+                {displayDate(Report?.eyeExamination?.leftEye?.since)}
               </Col>
             </Row>
             <Row className="mt-2">
               <Col>
                 <strong>Sphere:</strong>{" "}
-                {Report?.eyeExamination?.leftEye?.sphere}
+                {displayValue(Report?.eyeExamination?.leftEye?.sphere)}
               </Col>
               <Col>
                 <strong>Cylinder:</strong>{" "}
-                {Report?.eyeExamination?.leftEye?.cylinder}
+                {displayValue(Report?.eyeExamination?.leftEye?.cylinder)}
               </Col>
               <Col>
-                <strong>Axis:</strong> {Report?.eyeExamination?.leftEye?.axis}
+                <strong>Axis:</strong>{" "}
+                {displayValue(Report?.eyeExamination?.leftEye?.axis)}
               </Col>
             </Row>
             <Row className="mt-2">
               <Col>
                 <strong>Intraocular Pressure:</strong>{" "}
-                {Report?.eyeExamination?.leftEye?.intraocularPressure}
+                {displayValue(
+                  Report?.eyeExamination?.leftEye?.intraocularPressure
+                )}
               </Col>
               <Col>
                 <strong>Corneal Thickness:</strong>{" "}
-                {Report?.eyeExamination?.leftEye?.cornealThickness}
+                {displayValue(
+                  Report?.eyeExamination?.leftEye?.cornealThickness
+                )}
               </Col>
               <Col>
                 <strong>Chamber Angle:</strong>{" "}
-                {Report?.eyeExamination?.leftEye?.chamberAngle}
+                {displayValue(Report?.eyeExamination?.leftEye?.chamberAngle)}
               </Col>
             </Row>
             <Row className="mt-2">
               <Col>
                 <strong>Amsler Test Abnormal:</strong>{" "}
-                {Report?.eyeExamination?.leftEye?.amslerTestAbnormal
-                  ? "Yes"
-                  : "No"}
+                {displayBoolean(
+                  Report?.eyeExamination?.leftEye?.amslerTestAbnormal
+                )}
               </Col>
             </Row>
           </Card.Body>
@@ -276,31 +315,73 @@ const PatientReport = () => {
             Uploaded Eye Images
           </Card.Header>
           <Card.Body>
-            <h5>Right Eye</h5>
+            {/* Right Eye Section */}
+            <div className="d-flex justify-content-between align-items-center">
+              <h5 className="mb-0">Right Eye</h5>
+              {Report?.eyeExamination?.rightEye?.imageCaptureDate && (
+                <span className="text-muted">
+                  Image Capture Date:{" "}
+                  {new Date(
+                    Report.eyeExamination.rightEye.imageCaptureDate
+                  ).toLocaleDateString("de-DE")}
+                </span>
+              )}
+            </div>
             {Report?.eyeExamination?.rightEye?.images?.length > 0 ? (
               <ul>
-                {Report.eyeExamination.rightEye.images.map((link, idx) => (
-                  <li key={idx}>
-                    <a href={link} target="_blank" rel="noopener noreferrer">
-                      {link}
+                <div className="d-flex flex-wrap gap-3 mt-2">
+                  {Report.eyeExamination.rightEye.images.map((link, idx) => (
+                    <a
+                      key={idx}
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="thumbnail-link"
+                    >
+                      <img
+                        src={link}
+                        alt={`Right Eye Image ${idx + 1}`}
+                        className="eye-thumbnail"
+                      />
                     </a>
-                  </li>
-                ))}
+                  ))}
+                </div>
               </ul>
             ) : (
               <p>No images available</p>
             )}
 
-            <h5 className="mt-3">Left Eye</h5>
+            {/* Left Eye Section */}
+            <div className="d-flex justify-content-between align-items-center mt-3">
+              <h5 className="mb-0">Left Eye</h5>
+              {Report?.eyeExamination?.leftEye?.imageCaptureDate && (
+                <span className="text-muted">
+                  Image Capture Date:{" "}
+                  {new Date(
+                    Report.eyeExamination.leftEye.imageCaptureDate
+                  ).toLocaleDateString("de-DE")}
+                </span>
+              )}
+            </div>
             {Report?.eyeExamination?.leftEye?.images?.length > 0 ? (
               <ul>
-                {Report.eyeExamination.leftEye.images.map((link, idx) => (
-                  <li key={idx}>
-                    <a href={link} target="_blank" rel="noopener noreferrer">
-                      {link}
+                <div className="d-flex flex-wrap gap-3 mt-2">
+                  {Report.eyeExamination.leftEye.images.map((link, idx) => (
+                    <a
+                      key={idx}
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="thumbnail-link"
+                    >
+                      <img
+                        src={link}
+                        alt={`Left Eye Image ${idx + 1}`}
+                        className="eye-thumbnail"
+                      />
                     </a>
-                  </li>
-                ))}
+                  ))}
+                </div>
               </ul>
             ) : (
               <p>No images available</p>
@@ -308,7 +389,7 @@ const PatientReport = () => {
           </Card.Body>
         </Card>
         {/* Prediction */}
-        <Card className="mb-4 border-success">
+        {/* <Card className="mb-4 border-success">
           <Card.Header className="bg-success text-white">
             Model Prediction
           </Card.Header>
@@ -329,11 +410,50 @@ const PatientReport = () => {
               </li>
             </ul>
           </Card.Body>
+        </Card> */}
+
+        <Card className="mb-4 border-success">
+          <Card.Header className="bg-success text-white">
+            Model Prediction - Right Eye
+          </Card.Header>
+          <Card.Body>
+            <ul>
+              {Report?.modelResults?.rightEye &&
+                Array.from(Report.modelResults.rightEye.entries()).map(
+                  ([diseaseName, details]) => (
+                    <li key={diseaseName}>
+                      <strong>{details.name || diseaseName}:</strong>{" "}
+                      {details.percentage}%
+                    </li>
+                  )
+                )}
+            </ul>
+          </Card.Body>
+
+          <Card.Header className="bg-success text-white mt-4">
+            Model Prediction - Left Eye
+          </Card.Header>
+          <Card.Body>
+            <ul>
+              {Report?.modelResults?.leftEye &&
+                Array.from(Report.modelResults.leftEye.entries()).map(
+                  ([diseaseName, details]) => (
+                    <li key={diseaseName}>
+                      <strong>{details.name || diseaseName}:</strong>{" "}
+                      {details.percentage}%
+                    </li>
+                  )
+                )}
+            </ul>
+          </Card.Body>
         </Card>
 
         <div className="d-flex justify-content-center mt-4 gap-3">
           {userFromStorage?.role !== "doctor" && (
-            <Button href="/DoctorCard" variant="primary">
+            <Button
+              onClick={() => navigate(`/DoctorCard/${Report?.patient?._id}`)}
+              variant="primary"
+            >
               Refer To a Doctor
             </Button>
           )}
@@ -343,6 +463,7 @@ const PatientReport = () => {
           </Button>
         </div>
       </Container>
+
       <Footer />
     </>
   );

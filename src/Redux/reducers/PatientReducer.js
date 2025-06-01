@@ -5,11 +5,13 @@ import {
   GET_MY_PATIENT,
   DELETMYPATIENT,
   SENDPATIENT,
+  GETSPECIFICPATIENT,
 } from "../type";
 
 const inital = {
   patient: [],
   getpatient: [],
+  getspecificpatient: [],
   mypatient: [],
   deletpatient: [],
   sendpatient: [],
@@ -37,6 +39,11 @@ const patientReducer = (state = inital, action) => {
     case GET_MY_PATIENT:
       return {
         mypatient: action.payload,
+        loading: false,
+      };
+    case GETSPECIFICPATIENT:
+      return {
+        getspecificpatient: action.payload,
         loading: false,
       };
     case DELETMYPATIENT:

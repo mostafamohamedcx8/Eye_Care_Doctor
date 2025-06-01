@@ -8,7 +8,8 @@ const HeroSection = () => {
         <Container className="text-center text-white hero-content">
           <img src={"logo.png"} alt="Logo" className="hero-logo" />
           <h5 className="hero-subtitle">
-            LET'S FIND OUT WHAT'S WRONG WITH YOUR EYE
+            HELPING DOCTORS MAKE CONFIDENT DECISIONS WITH AI-POWERED EYE
+            INSIGHTS
           </h5>
           <h1 className="hero-title">Optia</h1>
           <Button href="/Signup" className="hero-button">

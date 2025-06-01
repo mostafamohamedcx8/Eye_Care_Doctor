@@ -75,7 +75,7 @@ const PatientTableUI = () => {
   useEffect(() => {
     if (loading === false) {
       if (res === "") {
-        notify("Evaluation deleted successfully", "success");
+        notify("Patient deleted successfully", "success");
         setTimeout(() => {
           window.location.reload(false);
         }, 1000);
@@ -108,7 +108,7 @@ const PatientTableUI = () => {
               <th>#</th>
               <th>Name</th>
               <th>Date of Birth</th>
-              <th>Gender</th>
+              <th>Salutation</th>
               <th>Ethnicity</th>
               <th>Reports Count</th>
               <th>Actions</th>
@@ -125,9 +125,13 @@ const PatientTableUI = () => {
               AllPatient.map((patient, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{patient.name}</td>
-                  <td>{new Date(patient.dateOfBirth).toLocaleDateString()}</td>
-                  <td>{patient.gender}</td>
+                  <td>
+                    {patient.firstname} {patient.lastname}
+                  </td>
+                  <td>
+                    {new Date(patient.dateOfBirth).toLocaleDateString("de-DE")}
+                  </td>
+                  <td>{patient.salutation}</td>
                   <td>{patient.ethnicity}</td>
                   <td>{patient.report?.length || 0}</td>
                   <td>
@@ -140,11 +144,19 @@ const PatientTableUI = () => {
                       </button>
                     )}
                     <button
-                      className="btn btn-sm btn-outline-primary"
+                      className="btn btn-sm btn-outline-primary me-2"
                       onClick={() => handleView(patient._id)}
                     >
                       <i className="bi bi-eye"></i>
                     </button>
+                    {userFromStorage?.role !== "doctor" && (
+                      <button
+                        className="btn btn-sm btn-outline-success me-2 "
+                        onClick={() => navigate(`/Examination/${patient._id}`)}
+                      >
+                        <i className="bi bi-journal-plus"></i>
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

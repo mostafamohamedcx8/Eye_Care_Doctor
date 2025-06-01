@@ -5,6 +5,7 @@ import {
   GET_MY_PATIENT,
   DELETMYPATIENT,
   SENDPATIENT,
+  GETSPECIFICPATIENT,
 } from "../type";
 import { InsertData } from "../../Hooks/useInsertData";
 import { useGetDataToken } from "../../Hooks/useGetData";
@@ -75,6 +76,21 @@ export const getMypatient = (limit, keyword) => async (dispatch) => {
   } catch (e) {
     dispatch({
       type: GET_MY_PATIENT,
+      payload: e.response,
+    });
+  }
+};
+export const getSpecificpatient = (id) => async (dispatch) => {
+  try {
+    const response = await useGetDataToken(`/api/v1/patient/myPatient/${id}`);
+
+    dispatch({
+      type: GETSPECIFICPATIENT,
+      payload: response,
+    });
+  } catch (e) {
+    dispatch({
+      type: GETSPECIFICPATIENT,
       payload: e.response,
     });
   }

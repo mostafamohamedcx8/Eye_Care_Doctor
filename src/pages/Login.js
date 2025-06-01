@@ -14,14 +14,13 @@ const LoginSection = () => {
   const Navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const [loading, setLoading] = useState(true);
   const [ispress, setispress] = useState(false);
 
   const HandelSubmit = async (e) => {
     e.preventDefault();
 
-    const isValid = validateLogin({ email, password, role });
+    const isValid = validateLogin({ email, password });
     if (!isValid) return;
     setLoading(true);
     setispress(true);
@@ -29,7 +28,7 @@ const LoginSection = () => {
       LoginUser({
         email,
         password,
-        role,
+        role: "doctor",
       })
     );
     setLoading(false);
@@ -40,7 +39,7 @@ const LoginSection = () => {
   useEffect(() => {
     if (loading === false) {
       if (res) {
-        console.log(res.data);
+        console.log(res.data.message);
         if (res.token) {
           localStorage.setItem("token", res.token);
           localStorage.setItem("user", JSON.stringify(res.data));
@@ -48,19 +47,29 @@ const LoginSection = () => {
           setTimeout(() => {
             window.location.href = "/";
           }, 1500);
-        } else if (res.data.message === "Invalid email or password or role") {
+        } else if (res?.data?.message === "Invalid email or password ") {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          notify("Invalid E-mail or Password or Role", "error");
+          notify("Invalid E-mail or Password ", "warn");
         } else if (
-          res.data.message ===
-          "Your email is not verified. We have sent a new verification Link to your email."
+          res?.data?.message ===
+          "Your email is not verified. We have sent a new verification link to your email."
         ) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           notify(
             "Your E-mail not verified. We sent new verification Link to your E-mail",
-            "error"
+            "warn"
+          );
+        } else if (
+          res.data.message ===
+          "Your medical license is still under review. You will be notified by email once it's verified."
+        ) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          notify(
+            "Your medical license is still under review. You will be notified by email once it's verified",
+            "warn"
           );
         } else {
           localStorage.removeItem("token");
@@ -114,25 +123,6 @@ const LoginSection = () => {
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3 d-flex justify-content-around">
-            <Form.Check
-              type="radio"
-              name="role"
-              label="Doctor"
-              value="doctor"
-              checked={role === "doctor"}
-              onChange={(e) => setRole(e.target.value)}
-            />
-            <Form.Check
-              type="radio"
-              name="role"
-              label="Optician"
-              value="optician"
-              checked={role === "optician"}
-              onChange={(e) => setRole(e.target.value)}
             />
           </Form.Group>
 

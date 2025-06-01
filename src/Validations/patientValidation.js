@@ -8,16 +8,21 @@ export const notify = (msg, type) => {
 
 // دالة التحقق من صحة البيانات
 export const validatePatientForm = ({
-  name,
-  gender,
+  firstname,
+  lastname,
+  salutation,
   dateOfBirth,
   ethnicity,
 }) => {
-  if (!name.trim()) {
+  if (!firstname.trim()) {
     notify("Name is required", "warn");
     return false;
   }
-  if (!gender) {
+  if (!lastname.trim()) {
+    notify("Name is required", "warn");
+    return false;
+  }
+  if (!salutation) {
     notify("Gender is required", "warn");
     return false;
   }

@@ -21,14 +21,14 @@ const Footer = () => {
                 <a href="/about">About Us</a>
               </li>
               <li>
-                <a href="#">Career</a>
+                <a href="/career">Career</a>
               </li>
               <li>
-                <a href="#">Editorial Team</a>
+                <a href="/team">Team</a>
               </li>
               <li>
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a href="#">Protection</a>
+                <a href="/protection">Protection</a>
               </li>
             </ul>
           </Col>
@@ -36,13 +36,13 @@ const Footer = () => {
             <h5>More</h5>
             <ul>
               <li>
-                <a href="#">Terms & Condition</a>
+                <a href="/terms">Terms & Conditions</a>
               </li>
               <li>
-                <a href="#">Privacy</a>
+                <a href="/privacy">Privacy</a>
               </li>
               <li>
-                <a href="#">Advertise</a>
+                <a href="/advertise">Advertise</a>
               </li>
             </ul>
           </Col>

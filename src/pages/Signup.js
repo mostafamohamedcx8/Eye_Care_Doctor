@@ -2,9 +2,17 @@ import Header from "../component/Header";
 import NavBar from "../component/NavBar";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../component/Footer";
-import { Button, Container, Form, Row, Col, Spinner } from "react-bootstrap";
+import {
+  Button,
+  Container,
+  Form,
+  Row,
+  Col,
+  Spinner,
+  Modal,
+} from "react-bootstrap";
 import { useEffect, useState } from "react";
-import React, { State, City } from "country-state-city";
+import { State, City } from "country-state-city";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateUser } from "../Redux/actions/Useraction";
 import { validateSignupForm } from "../Validations/validateSignupForm";
@@ -14,6 +22,8 @@ const SignupSection = () => {
   const navigate = useNavigate();
   const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [imagemedicallicense, setimagemedicallicense] = useState(null);
   const [cities, setCities] = useState([]);
   const [selectedcity, setSelectedcity] = useState("");
   useEffect(() => {
@@ -37,7 +47,9 @@ const SignupSection = () => {
   const [dateOfBirthDay, setDateOfBirthDay] = useState("");
   const [dateOfBirthMonth, setDateOfBirthMonth] = useState("");
   const [dateOfBirthYear, setDateOfBirthYear] = useState("");
-  const [gender, setGender] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [specialty, setSpecialty] = useState("");
+  const [salutation, setsalutation] = useState("");
   const [fullAddress, setFullAddress] = useState("");
   const [loading, setloading] = useState(true);
   const [ispress, setispress] = useState(false);
@@ -49,7 +61,7 @@ const SignupSection = () => {
     setEmail("");
     setPassword("");
     setConfirmPassword("");
-    setGender("");
+    setsalutation("");
     setDateOfBirthDay("Day");
     setDateOfBirthMonth("Month");
     setDateOfBirthYear("Year");
@@ -58,6 +70,30 @@ const SignupSection = () => {
     setFullAddress("");
     setloading(true);
     setispress(false);
+  };
+  const handleCloseModal = () => setShowModal(false);
+
+  const handleShowModal = () => {
+    const isValid = validateSignupForm({
+      firstname,
+      lastname,
+      email,
+      password,
+      passwordConfirm: confirmPassword,
+      dateOfBirthDay,
+      dateOfBirthMonth,
+      dateOfBirthYear,
+      salutation,
+      postalCode,
+      Specialty: specialty,
+      state: selectedState,
+      city: selectedcity,
+      fullAddress,
+    });
+
+    if (!isValid) return; // لو فيه خطأ ميفتحش المودال
+
+    setShowModal(true); // لو البيانات صحيحة افتح المودال
   };
   const handelSubmit = async (event) => {
     event.preventDefault();
@@ -81,22 +117,27 @@ const SignupSection = () => {
     const stateObject = states.find((state) => state.isoCode === selectedState);
     const stateName = stateObject ? stateObject.name : selectedState;
 
-    const userData = {
-      firstname,
-      lastname,
-      email,
-      password,
-      passwordConfirm: confirmPassword,
-      gender: gender.toLowerCase(),
-      dateOfBirth: {
-        day: Number(dateOfBirthDay),
-        month: monthName,
-        year: Number(dateOfBirthYear),
-      },
-      state: stateName,
-      city: selectedcity,
-      fullAddress,
-    };
+    // 1. Create FormData object
+    const formData = new FormData();
+
+    // 2. Append normal fields
+    formData.append("firstname", firstname);
+    formData.append("lastname", lastname);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("passwordConfirm", confirmPassword);
+    formData.append("Specialty", specialty);
+    formData.append("salutation", salutation);
+    formData.append("state", stateName);
+    formData.append("city", selectedcity);
+    formData.append("fullAddress", fullAddress);
+    formData.append("role", "doctor");
+    formData.append("postalCode", postalCode);
+    // Append nested dateOfBirth fields
+    formData.append("dateOfBirth.day", Number(dateOfBirthDay));
+    formData.append("dateOfBirth.month", monthName);
+    formData.append("dateOfBirth.year", Number(dateOfBirthYear));
+    formData.append("imagemedicallicense", imagemedicallicense); // أضف الصورة
 
     const isValid = validateSignupForm({
       firstname,
@@ -107,9 +148,11 @@ const SignupSection = () => {
       dateOfBirthDay,
       dateOfBirthMonth,
       dateOfBirthYear,
-      gender,
+      salutation,
+      postalCode,
       state: selectedState,
       city: selectedcity,
+      Specialty: specialty,
       fullAddress,
     });
 
@@ -117,9 +160,9 @@ const SignupSection = () => {
 
     setloading(true);
     setispress(true);
-    console.log(userData);
 
-    await dispatch(CreateUser(userData)); // Redux thunk
+    const res = await dispatch(CreateUser(formData)); // ← خزن النتيجة هنا
+    console.log("Response from backend:", res); // send FormData object
     setloading(false);
   };
 
@@ -252,16 +295,18 @@ const SignupSection = () => {
           </Row>
 
           <Form.Group className="mb-3">
-            <Form.Label>Gender</Form.Label>
+            <Form.Label>Salutation</Form.Label>
             <Form.Select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
+              value={salutation}
+              onChange={(e) => setsalutation(e.target.value)}
             >
               <option value="" disabled hidden>
-                Select Gender
+                Select Salutation
               </option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
+              <option value="Mr">Mr</option>
+              <option value="Mrs">Mrs</option>
+              <option value="Ms">Ms</option>
+              <option value="Mx">Mx</option>
             </Form.Select>
           </Form.Group>
 
@@ -294,6 +339,40 @@ const SignupSection = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </Form.Group>
+          <Form.Group className="mb-4">
+            <Form.Label>Specialty</Form.Label>
+            <Form.Select
+              value={specialty}
+              onChange={(e) => setSpecialty(e.target.value)}
+            >
+              <option value="" disabled>
+                Select a Specialty
+              </option>
+              <option value="Cardiology">Cardiology</option>
+              <option value="Dermatology">Dermatology</option>
+              <option value="Endocrinology">Endocrinology</option>
+              <option value="Gastroenterology">Gastroenterology</option>
+              <option value="Hematology">Hematology</option>
+              <option value="Neurology">Neurology</option>
+              <option value="Nephrology">Nephrology</option>
+              <option value="Oncology">Oncology</option>
+              <option value="Ophthalmology">Ophthalmology</option>
+              <option value="Orthopedics">Orthopedics</option>
+              <option value="Pediatrics">Pediatrics</option>
+              <option value="Psychiatry">Psychiatry</option>
+              <option value="Pulmonology">Pulmonology</option>
+              <option value="Radiology">Radiology</option>
+              <option value="Rheumatology">Rheumatology</option>
+              <option value="Urology">Urology</option>
+              <option value="General Surgery">General Surgery</option>
+              <option value="Internal Medicine">Internal Medicine</option>
+              <option value="Emergency Medicine">Emergency Medicine</option>
+              <option value="Family Medicine">Family Medicine</option>
+              <option value="Obstetrics and Gynecology">
+                Obstetrics and Gynecology
+              </option>
+            </Form.Select>
+          </Form.Group>
 
           {/* العنوان */}
           <Form.Group className="mb-3">
@@ -325,6 +404,15 @@ const SignupSection = () => {
               ))}
             </Form.Select>
           </Form.Group>
+          <Form.Group className="mb-4">
+            <Form.Label>Postal Code</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter your Postal Code (12564)"
+              value={postalCode}
+              onChange={(e) => setPostalCode(e.target.value)}
+            />
+          </Form.Group>
 
           <Form.Group className="mb-4">
             <Form.Label>Full Address</Form.Label>
@@ -336,7 +424,10 @@ const SignupSection = () => {
             />
           </Form.Group>
 
-          <Button className="w-100 mb-2 welcome-button" onClick={handelSubmit}>
+          <Button
+            className="w-100 mb-2 welcome-button"
+            onClick={handleShowModal}
+          >
             Sign Up
           </Button>
         </Form>
@@ -348,6 +439,36 @@ const SignupSection = () => {
           )
         ) : null}
       </Container>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Medical license Or Shop license </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Medical license Or Shop license</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={(e) => setimagemedicallicense(e.target.files[0])}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={(e) => {
+              handleCloseModal();
+              handelSubmit(e); // ← نفذ السبميت بعد رفع الصورة
+            }}
+            disabled={!imagemedicallicense} // اعمل تعطيل للزر لو مفيش صورة
+          >
+            Confirm & Sign Up
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

@@ -17,10 +17,16 @@ const WelcomeSection = () => {
               with the tools you need to deliver exceptional care to your
               patients. Thank you for trusting us with your practice!
             </p>
-            <Button className="welcome-button">Learn More</Button>
+            <Button className="welcome-button" href="/about">
+              Learn More
+            </Button>
           </Col>
           <Col md={6}>
-            <img src={"bg-doctor.png"} alt="Doctor" className="welcome-image" />
+            <img
+              src={"Doctorimage.png"}
+              alt="Doctor"
+              className="welcome-image"
+            />
           </Col>
         </Row>
       </Container>
