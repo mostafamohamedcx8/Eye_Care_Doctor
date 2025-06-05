@@ -8,6 +8,7 @@ import {
   CREATE_NEW_PASSWORD,
   UPDATE_USER_PROFILE,
   UPDATELOGGEDUSERPASSWORD,
+  CREATE_FEEDBACK,
 } from "../type";
 import { InsertData, InsertDataWithImage } from "../../Hooks/useInsertData";
 import {
@@ -155,6 +156,25 @@ export const UpdateLoggedUserPassword = (body) => async (dispatch) => {
   } catch (e) {
     dispatch({
       type: UPDATELOGGEDUSERPASSWORD,
+      payload: e.response,
+    });
+  }
+};
+
+export const CreateFeedBack = (body, id) => async (dispatch) => {
+  try {
+    const response = await updateDataWithToken(
+      `/api/v1/report/myreport/${id}`,
+      body
+    );
+    dispatch({
+      type: CREATE_FEEDBACK,
+      payload: response,
+      loading: true,
+    });
+  } catch (e) {
+    dispatch({
+      type: CREATE_FEEDBACK,
       payload: e.response,
     });
   }

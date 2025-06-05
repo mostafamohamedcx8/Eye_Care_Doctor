@@ -1,5 +1,13 @@
-import React, { useRef, useEffect } from "react";
-import { Container, Row, Col, Card, ListGroup, Button } from "react-bootstrap";
+import React, { useRef, useEffect, useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  ListGroup,
+  Button,
+  Form,
+} from "react-bootstrap";
 import Header from "../component/Header";
 import NavBar from "../component/NavBar";
 import Footer from "../component/Footer";
@@ -9,18 +17,60 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSpecificReport } from "./../Redux/actions/Reportaction";
 import { useNavigate } from "react-router-dom";
+import { ChevronDown, ChevronUp } from "react-bootstrap-icons";
+import { CreateFeedBack } from "./../Redux/actions/Useraction";
+import notify from "../Hook/useNotification";
 
 const PatientReport = () => {
-  const navigate = useNavigate();
-  const userFromStorage = JSON.parse(localStorage.getItem("user"));
   const dispatch = useDispatch();
   const { id } = useParams();
+  const userFromStorage = JSON.parse(localStorage.getItem("user"));
+  const DoctorId = userFromStorage._id;
+  const [showDoctorFeedback, setShowDoctorFeedback] = useState(false);
+  const [loading, setloading] = useState(true);
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [rightEyeFeedback, setRightEyeFeedback] = useState({
+    aiPredictionCorrect: "",
+    comment: "",
+  });
+
+  const [leftEyeFeedback, setLeftEyeFeedback] = useState({
+    aiPredictionCorrect: "",
+    comment: "",
+  });
+
+  const [diagnosis, setDiagnosis] = useState("");
+  const [recommendedAction, setRecommendedAction] = useState("");
   useEffect(() => {
     dispatch(getSpecificReport(id));
   }, []);
 
+  // Filter feedback by the logged-in doctor's ID
   const ReportData = useSelector((state) => state.allreport.specificreport);
-  // Add optional chaining for safety
+  const Report = ReportData.data || [];
+  console.log(Report);
+
+  useEffect(() => {
+    if (Report?.doctorFeedbacks) {
+      const doctorFeedback = Report.doctorFeedbacks.find(
+        (feedback) => feedback.doctor._id === DoctorId
+      );
+      if (doctorFeedback) {
+        setRightEyeFeedback({
+          aiPredictionCorrect:
+            doctorFeedback.rightEyeFeedback.aiPredictionCorrect || "",
+          comment: doctorFeedback.rightEyeFeedback.comment || "",
+        });
+        setLeftEyeFeedback({
+          aiPredictionCorrect:
+            doctorFeedback.leftEyeFeedback.aiPredictionCorrect || "",
+          comment: doctorFeedback.leftEyeFeedback.comment || "",
+        });
+        setDiagnosis(doctorFeedback.diagnosis || "");
+        setRecommendedAction(doctorFeedback.recommendedAction || "");
+      }
+    }
+  }, [Report, DoctorId]);
 
   const reportRef = useRef();
 
@@ -50,9 +100,6 @@ const PatientReport = () => {
     });
   };
 
-  const Report = ReportData.data || [];
-  console.log(Report);
-
   const displayValue = (value) => {
     return value !== undefined && value !== null && value !== "" ? (
       value
@@ -81,6 +128,37 @@ const PatientReport = () => {
       <span style={{ color: "red" }}>X</span>
     );
   };
+
+  const handleSendFeedBack = async (event) => {
+    event.preventDefault();
+    setloading(true);
+    await dispatch(
+      CreateFeedBack(
+        {
+          rightEyeFeedback,
+          leftEyeFeedback,
+          diagnosis,
+          recommendedAction,
+        },
+        id
+      )
+    );
+    setloading(false);
+    setFeedbackSent(true); // <-- Flag علشان نفعل الإشعار مرة واحدة
+  };
+  const res = useSelector((state) => state.alluser.feedback);
+
+  useEffect(() => {
+    if (feedbackSent) {
+      if (res && res?.data?.message === "Feedback added successfully") {
+        notify("Feedback added successfully", "success");
+      } else {
+        notify("Feedback add failed", "warn");
+      }
+
+      setFeedbackSent(false); // نرجعه تاني false علشان ميتكررش
+    }
+  }, [feedbackSent, res]);
 
   return (
     <>
@@ -412,52 +490,196 @@ const PatientReport = () => {
           </Card.Body>
         </Card> */}
 
-        <Card className="mb-4 border-success">
-          <Card.Header className="bg-success text-white">
+        <Card className="mb-4 border-primary">
+          <Card.Header className="bg-primary text-white">
             Model Prediction - Right Eye
           </Card.Header>
           <Card.Body>
-            <ul>
-              {Report?.modelResults?.rightEye &&
-                Array.from(Report.modelResults.rightEye.entries()).map(
-                  ([diseaseName, details]) => (
-                    <li key={diseaseName}>
-                      <strong>{details.name || diseaseName}:</strong>{" "}
-                      {details.percentage}%
-                    </li>
-                  )
-                )}
-            </ul>
+            {Report?.modelResults?.rightEye ? (
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Disease</th>
+                    <th>Confidence (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(JSON.parse(Report.modelResults.rightEye)).map(
+                    ([diseaseName, details]) => (
+                      <tr key={diseaseName}>
+                        <td>{details.name || diseaseName}</td>
+                        <td>
+                          <span className="badge bg-info text-dark">
+                            {details.percentage}%
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            ) : (
+              <p>No prediction data available for the right eye.</p>
+            )}
           </Card.Body>
 
-          <Card.Header className="bg-success text-white mt-4">
+          <Card.Header className="bg-primary text-white">
             Model Prediction - Left Eye
           </Card.Header>
           <Card.Body>
-            <ul>
-              {Report?.modelResults?.leftEye &&
-                Array.from(Report.modelResults.leftEye.entries()).map(
-                  ([diseaseName, details]) => (
-                    <li key={diseaseName}>
-                      <strong>{details.name || diseaseName}:</strong>{" "}
-                      {details.percentage}%
-                    </li>
-                  )
-                )}
-            </ul>
+            {Report?.modelResults?.leftEye ? (
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Disease</th>
+                    <th>Confidence (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(JSON.parse(Report.modelResults.leftEye)).map(
+                    ([diseaseName, details]) => (
+                      <tr key={diseaseName}>
+                        <td>{details.name || diseaseName}</td>
+                        <td>
+                          <span className="badge bg-info text-dark">
+                            {details.percentage}%
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            ) : (
+              <p>No prediction data available for the left eye.</p>
+            )}
           </Card.Body>
         </Card>
 
-        <div className="d-flex justify-content-center mt-4 gap-3">
-          {userFromStorage?.role !== "doctor" && (
-            <Button
-              onClick={() => navigate(`/DoctorCard/${Report?.patient?._id}`)}
-              variant="primary"
-            >
-              Refer To a Doctor
-            </Button>
-          )}
+        <Card className="mb-4 border-success">
+          <Card.Header
+            onClick={() => setShowDoctorFeedback(!showDoctorFeedback)}
+            className="bg-success text-white d-flex justify-content-between align-items-center"
+            style={{ cursor: "pointer" }}
+          >
+            <span>Doctor's Feedback Form</span>
+            {showDoctorFeedback ? <ChevronUp /> : <ChevronDown />}
+          </Card.Header>
 
+          {showDoctorFeedback && (
+            <Card.Body>
+              <Form>
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <strong>Right Eye - AI Prediction Correct?</strong>
+                  </Form.Label>
+                  <Form.Select
+                    value={rightEyeFeedback.aiPredictionCorrect}
+                    onChange={(e) =>
+                      setRightEyeFeedback({
+                        ...rightEyeFeedback,
+                        aiPredictionCorrect: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="">Select...</option>
+                    <option value="correct">Correct</option>
+                    <option value="incorrect">Incorrect</option>
+                  </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <strong>Right Eye Comment</strong>
+                  </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={rightEyeFeedback.comment}
+                    onChange={(e) =>
+                      setRightEyeFeedback({
+                        ...rightEyeFeedback,
+                        comment: e.target.value,
+                      })
+                    }
+                    placeholder="Enter your opinion about the right eye prediction"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <strong>Left Eye - AI Prediction Correct?</strong>
+                  </Form.Label>
+                  <Form.Select
+                    value={leftEyeFeedback.aiPredictionCorrect}
+                    onChange={(e) =>
+                      setLeftEyeFeedback({
+                        ...leftEyeFeedback,
+                        aiPredictionCorrect: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="">Select...</option>
+                    <option value="correct">Correct</option>
+                    <option value="incorrect">Incorrect</option>
+                  </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <strong>Left Eye Comment</strong>
+                  </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={leftEyeFeedback.comment}
+                    onChange={(e) =>
+                      setLeftEyeFeedback({
+                        ...leftEyeFeedback,
+                        comment: e.target.value,
+                      })
+                    }
+                    placeholder="Enter your opinion about the left eye prediction"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <strong>Diagnosis</strong>
+                  </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={diagnosis}
+                    onChange={(e) => setDiagnosis(e.target.value)}
+                    placeholder="Enter your medical diagnosis"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <strong>Recommended Action</strong>
+                  </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={recommendedAction}
+                    onChange={(e) => setRecommendedAction(e.target.value)}
+                    placeholder="Suggested next steps for the patient"
+                  />
+                </Form.Group>
+                <Button
+                  variant="success"
+                  onClick={(e) => handleSendFeedBack(e)}
+                >
+                  Submit Feedback
+                </Button>
+              </Form>
+            </Card.Body>
+          )}
+        </Card>
+
+        <div className="d-flex justify-content-center mt-4 gap-3">
           <Button onClick={handleDownloadPDF} variant="danger">
             Download Report
           </Button>

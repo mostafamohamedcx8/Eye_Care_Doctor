@@ -6,6 +6,7 @@ import {
   CREATE_NEW_PASSWORD,
   UPDATE_USER_PROFILE,
   UPDATELOGGEDUSERPASSWORD,
+  CREATE_FEEDBACK,
 } from "../type";
 
 const initial = {
@@ -16,6 +17,7 @@ const initial = {
   verfiyPassword: [],
   createNewPassword: [],
   userpassword: [],
+  feedback: [],
   error: null, // أضف حقل للخطأ
   loading: true,
 };
@@ -62,7 +64,11 @@ const userReducer = (state = initial, action) => {
         ...state,
         userpassword: action.payload,
       };
-
+    case CREATE_FEEDBACK:
+      return {
+        ...state,
+        feedback: action.payload,
+      };
     default:
       return state;
   }

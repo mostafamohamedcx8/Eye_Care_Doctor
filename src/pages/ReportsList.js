@@ -98,17 +98,31 @@ const ReportsList = () => {
         <h2 className="text-center mb-4 fw-bold button-color">
           Patient Reports
         </h2>
-
         <Row>
-          <Row>
-            {Report?.reports?.length === 0 ? (
-              <Col>
-                <p className="text-center text-danger fw-bold">
-                  No reports available
-                </p>
-              </Col>
-            ) : (
-              Report?.reports?.map((report) => (
+          {Report?.reports?.length === 0 ? (
+            <Col>
+              <p className="text-center text-danger fw-bold">
+                No reports available
+              </p>
+            </Col>
+          ) : (
+            Report?.reports?.map((report) => {
+              const rightEyePredictions = report?.modelResults?.rightEye
+                ? JSON.parse(report.modelResults.rightEye)
+                : null;
+              const leftEyePredictions = report?.modelResults?.leftEye
+                ? JSON.parse(report.modelResults.leftEye)
+                : null;
+
+              const predictionsToShow =
+                rightEyePredictions || leftEyePredictions;
+              const predictionLabel = rightEyePredictions
+                ? "Right Eye"
+                : leftEyePredictions
+                ? "Left Eye"
+                : null;
+
+              return (
                 <Col md={4} key={report._id} className="mb-4">
                   <Card className="shadow-sm">
                     <Card.Body>
@@ -135,27 +149,26 @@ const ReportsList = () => {
                         LeftEye visusCC:{" "}
                         {report?.eyeExamination?.leftEye?.visusCC}
                       </Card.Subtitle>
-                      <Card.Text>
-                        <strong>{report?.modelResults?.disease1?.name}</strong>{" "}
-                        detected at{" "}
-                        <strong>
-                          {report?.modelResults?.disease1?.percentage}%
-                        </strong>
-                      </Card.Text>
-                      <Card.Text>
-                        <strong>{report?.modelResults?.disease2?.name}</strong>{" "}
-                        detected at{" "}
-                        <strong>
-                          {report?.modelResults?.disease2?.percentage}%
-                        </strong>
-                      </Card.Text>
-                      <Card.Text>
-                        <strong>{report?.modelResults?.disease3?.name}</strong>{" "}
-                        detected at{" "}
-                        <strong>
-                          {report?.modelResults?.disease3?.percentage}%
-                        </strong>
-                      </Card.Text>
+
+                      {predictionsToShow ? (
+                        <>
+                          <Card.Text className="fw-bold mb-1">
+                            Model Prediction - {predictionLabel}
+                          </Card.Text>
+                          {Object.entries(predictionsToShow).map(
+                            ([diseaseName, details]) => (
+                              <Card.Text key={diseaseName}>
+                                <strong>{details.name || diseaseName}</strong>{" "}
+                                detected at{" "}
+                                <strong>{details.percentage}%</strong>
+                              </Card.Text>
+                            )
+                          )}
+                        </>
+                      ) : (
+                        <Card.Text>No model prediction available</Card.Text>
+                      )}
+
                       <Button
                         variant="primary"
                         size="sm"
@@ -167,13 +180,12 @@ const ReportsList = () => {
                     </Card.Body>
                   </Card>
                 </Col>
-              ))
-            )}
-          </Row>
-          {isNavigating ? (
-            <Spinner animation="border" variant="primary" />
-          ) : null}
+              );
+            })
+          )}
         </Row>
+
+        {isNavigating ? <Spinner animation="border" variant="primary" /> : null}
       </Container>
 
       {/* Modal */}

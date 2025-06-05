@@ -52,7 +52,7 @@ const NavBar = () => {
                   title={
                     <Image
                       src={
-                        user?.imageProfile ? user.imageProfile : "/profile.jpg"
+                        user?.imageProfile ? user?.imageProfile : "/profile.jpg"
                       }
                       roundedCircle
                       width="40"
