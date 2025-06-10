@@ -10,8 +10,8 @@ const AboutSection = () => {
     <>
       {/* Hero Section */}
       <Row>
-        <div className="about-hero">
-          <div className="overlay about-hero">
+        <div className="hero-section">
+          <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
                 Home
@@ -26,19 +26,21 @@ const AboutSection = () => {
 
       {/* Content Section */}
       <Container className="about-content text-center py-5">
-        <h2 className="section-title mb-4">Welcome to Eye Care Website</h2>
+        <h2 className="section-title mb-4">Welcome to Optia Website</h2>
         <p className="section-paragraph mx-auto">
-          where cutting-edge technology meets healthcare innovation. Our mission
-          is to revolutionize eye care through advanced imaging and analysis. We
-          understand the vital role that vision plays in your life, and we are
-          dedicated to ensuring that everyone has access to comprehensive eye
-          health assessments. At Eye Care Website, we utilize state-of-the-art
-          imaging techniques to capture detailed pictures of the eye. Our
-          sophisticated algorithms analyze these images to detect potential eye
-          diseases at their earliest stages, allowing for timely intervention
-          and treatment. Whether it's glaucoma, diabetic retinopathy, or other
-          eye conditions, our goal is to empower individuals with the knowledge
-          they need to maintain their eye health.
+          Optia is a smart, AI-powered platform designed to support
+          collaboration between opticians and doctors in delivering high-quality
+          eye care. Our system enables opticians to upload eye images for
+          automated analysis using advanced machine learning models. These
+          models generate preliminary diagnostic reports, which are then
+          reviewed by specialized doctors via the Optia website. Doctors play a
+          crucial role on the platform by evaluating the AI-generated diagnoses,
+          confirming or correcting them based on their expertise, and
+          determining if any medical action is needed. They also have access to
+          patients’ medical histories and detailed AI reports, helping them make
+          well-informed decisions. Optia bridges the gap between early optical
+          assessments and professional medical validation — making patient care
+          faster, smarter, and more reliable.
         </p>
       </Container>
     </>

@@ -155,14 +155,41 @@ const ReportsList = () => {
                           <Card.Text className="fw-bold mb-1">
                             Model Prediction - {predictionLabel}
                           </Card.Text>
-                          {Object.entries(predictionsToShow).map(
-                            ([diseaseName, details]) => (
-                              <Card.Text key={diseaseName}>
-                                <strong>{details.name || diseaseName}</strong>{" "}
-                                detected at{" "}
-                                <strong>{details.percentage}%</strong>
-                              </Card.Text>
+
+                          {/* جودة الصورة */}
+                          {predictionsToShow.image_quality && (
+                            <Card.Text className="text-warning">
+                              <strong>Image Quality:</strong>{" "}
+                              {predictionsToShow.image_quality.status} (
+                              {predictionsToShow.image_quality.confidence ??
+                                "N/A"}
+                              %)
+                            </Card.Text>
+                          )}
+
+                          {/* الأمراض المكتشفة */}
+                          {Object.entries(predictionsToShow)
+                            .filter(
+                              ([key, value]) =>
+                                key !== "image_quality" &&
+                                key !== "eye_side" &&
+                                value.status === "Detected"
                             )
+                            .map(([diseaseName, details]) => (
+                              <Card.Text key={diseaseName}>
+                                <strong>{diseaseName}</strong> detected at{" "}
+                                <strong>{details.confidence ?? "N/A"}%</strong>
+                              </Card.Text>
+                            ))}
+
+                          {/* لو مفيش أمراض مكتشفة */}
+                          {Object.entries(predictionsToShow).filter(
+                            ([key, value]) =>
+                              key !== "image_quality" &&
+                              key !== "eye_side" &&
+                              value.status === "Detected"
+                          ).length === 0 && (
+                            <Card.Text>No detected diseases.</Card.Text>
                           )}
                         </>
                       ) : (

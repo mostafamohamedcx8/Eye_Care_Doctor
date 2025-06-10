@@ -496,28 +496,58 @@ const PatientReport = () => {
           </Card.Header>
           <Card.Body>
             {Report?.modelResults?.rightEye ? (
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Disease</th>
-                    <th>Confidence (%)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(JSON.parse(Report.modelResults.rightEye)).map(
-                    ([diseaseName, details]) => (
-                      <tr key={diseaseName}>
-                        <td>{details.name || diseaseName}</td>
-                        <td>
-                          <span className="badge bg-info text-dark">
-                            {details.percentage}%
-                          </span>
-                        </td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
+              (() => {
+                const rightData = JSON.parse(Report.modelResults.rightEye);
+                const isImageQualityBad =
+                  rightData.image_quality?.status !== "Adequate";
+
+                const filteredDiseases = Object.entries(rightData).filter(
+                  ([key, value]) =>
+                    key !== "image_quality" &&
+                    key !== "eye_side" &&
+                    value.status === "Detected"
+                );
+
+                return (
+                  <>
+                    {filteredDiseases.length > 0 ? (
+                      <table className="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Disease</th>
+                            <th>Confidence (%)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredDiseases.map(([key, value]) => (
+                            <tr key={key}>
+                              <td>{key}</td>
+                              <td>
+                                <span className="badge bg-info text-dark">
+                                  {value.confidence ?? "N/A"}%
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p>No detected diseases in the right eye.</p>
+                    )}
+
+                    {isImageQualityBad && (
+                      <div className="alert alert-warning mt-3">
+                        <strong>Bad image quality: - can be due to :</strong>
+                        <br />
+                        Media Opacity due to: Corneal opacity, Cataract,
+                        vitreous opacities, vitreous hemorrhage/ inflammation,
+                        tear film issues, etc. OR Optics misalignment (or
+                        insufficient pupillary dilation, focus)
+                      </div>
+                    )}
+                  </>
+                );
+              })()
             ) : (
               <p>No prediction data available for the right eye.</p>
             )}
@@ -528,28 +558,58 @@ const PatientReport = () => {
           </Card.Header>
           <Card.Body>
             {Report?.modelResults?.leftEye ? (
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Disease</th>
-                    <th>Confidence (%)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(JSON.parse(Report.modelResults.leftEye)).map(
-                    ([diseaseName, details]) => (
-                      <tr key={diseaseName}>
-                        <td>{details.name || diseaseName}</td>
-                        <td>
-                          <span className="badge bg-info text-dark">
-                            {details.percentage}%
-                          </span>
-                        </td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
+              (() => {
+                const leftData = JSON.parse(Report.modelResults.leftEye);
+                const isImageQualityBad =
+                  leftData.image_quality?.status !== "Adequate";
+
+                const filteredDiseases = Object.entries(leftData).filter(
+                  ([key, value]) =>
+                    key !== "image_quality" &&
+                    key !== "eye_side" &&
+                    value.status === "Detected"
+                );
+
+                return (
+                  <>
+                    {filteredDiseases.length > 0 ? (
+                      <table className="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Disease</th>
+                            <th>Confidence (%)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredDiseases.map(([key, value]) => (
+                            <tr key={key}>
+                              <td>{key}</td>
+                              <td>
+                                <span className="badge bg-info text-dark">
+                                  {value.confidence ?? "N/A"}%
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p>No detected diseases in the left eye.</p>
+                    )}
+
+                    {isImageQualityBad && (
+                      <div className="alert alert-warning mt-3">
+                        <strong>Bad image quality: - can be due to :</strong>
+                        <br />
+                        Media Opacity due to: Corneal opacity, Cataract,
+                        vitreous opacities, vitreous hemorrhage/ inflammation,
+                        tear film issues, etc. OR Optics misalignment (or
+                        insufficient pupillary dilation, focus)
+                      </div>
+                    )}
+                  </>
+                );
+              })()
             ) : (
               <p>No prediction data available for the left eye.</p>
             )}

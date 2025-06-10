@@ -73,7 +73,8 @@ const SignupSection = () => {
   };
   const handleCloseModal = () => setShowModal(false);
 
-  const handleShowModal = () => {
+  const handleShowModal = (e) => {
+    e.preventDefault();
     const isValid = validateSignupForm({
       firstname,
       lastname,
@@ -193,8 +194,8 @@ const SignupSection = () => {
     <>
       {/* Hero Section */}
       <Row>
-        <div className="about-hero">
-          <div className="overlay about-hero">
+        <div className="hero-section">
+          <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
                 Home
@@ -214,7 +215,7 @@ const SignupSection = () => {
       >
         <h3 className="text-center mb-4">Sign Up</h3>
 
-        <Form>
+        <Form onSubmit={handleShowModal}>
           <Row>
             <Col>
               <Form.Group className="mb-3">
@@ -424,10 +425,7 @@ const SignupSection = () => {
             />
           </Form.Group>
 
-          <Button
-            className="w-100 mb-2 welcome-button"
-            onClick={handleShowModal}
-          >
+          <Button type="submit" className="w-100 mb-2 welcome-button">
             Sign Up
           </Button>
         </Form>

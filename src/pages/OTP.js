@@ -49,8 +49,8 @@ const OTPSection = () => {
     <>
       {/* Hero Section */}
       <Row>
-        <div className="about-hero">
-          <div className="overlay about-hero">
+        <div className="hero-section">
+          <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
                 Home

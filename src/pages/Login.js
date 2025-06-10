@@ -61,6 +61,10 @@ const LoginSection = () => {
             "Your E-mail not verified. We sent new verification Link to your E-mail",
             "warn"
           );
+        } else if (res?.data?.message === "Invalid email or password or role") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          notify("Invalid email or password or role", "warn");
         } else if (
           res.data.message ===
           "Your medical license is still under review. You will be notified by email once it's verified."
@@ -85,8 +89,8 @@ const LoginSection = () => {
     <>
       {/* Hero Section */}
       <Row>
-        <div className="about-hero">
-          <div className="overlay about-hero">
+        <div className="hero-section">
+          <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
                 Home
@@ -105,7 +109,7 @@ const LoginSection = () => {
         style={{ maxWidth: "600px", backgroundColor: "#f8f9fa" }}
       >
         <h2 className="text-center mb-4">Login</h2>
-        <Form>
+        <Form onSubmit={HandelSubmit}>
           <Form.Group className="mb-3" controlId="formUsername">
             <Form.Label>Email</Form.Label>
             <Form.Control
@@ -126,7 +130,7 @@ const LoginSection = () => {
             />
           </Form.Group>
 
-          <Button className="w-100 mb-2 welcome-button" onClick={HandelSubmit}>
+          <Button type="submit" className="w-100 mb-2 welcome-button">
             Log In
           </Button>
 
