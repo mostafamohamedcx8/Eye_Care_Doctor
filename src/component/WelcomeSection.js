@@ -7,7 +7,7 @@ const WelcomeSection = () => {
       <Container>
         <Row className="align-items-center">
           <Col md={6}>
-            <h2 className="welcome-title">Welcome to Optia Website</h2>
+            <h2 className="welcome-title">Welcome to Fundus.cloud Website</h2>
             <p className="welcome-text">
               This platform allows doctors to review AI-generated eye condition
               diagnoses sent by opticians, assess their accuracy, and provide
@@ -20,7 +20,7 @@ const WelcomeSection = () => {
           </Col>
           <Col md={6}>
             <img
-              src={"Doctorimage.png"}
+              src={"Doctorimage.jpeg"}
               alt="Doctor"
               className="welcome-image"
             />

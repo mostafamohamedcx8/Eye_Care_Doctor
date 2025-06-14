@@ -6,6 +6,9 @@ import {
   DELETMYPATIENT,
   SENDPATIENT,
   GETSPECIFICPATIENT,
+  GET_MY_ARCHIVEDPATIENT,
+  ARCHIVEDPATIENT,
+  REPORTSTATS,
 } from "../type";
 
 const inital = {
@@ -15,6 +18,9 @@ const inital = {
   mypatient: [],
   deletpatient: [],
   sendpatient: [],
+  archivedpatient: [],
+  unarchivedpatient: [],
+  reportstats: [],
   loading: true,
 };
 const patientReducer = (state = inital, action) => {
@@ -33,16 +39,37 @@ const patientReducer = (state = inital, action) => {
       };
     case GETPATIENT:
       return {
+        ...state,
         getpatient: action.payload,
         loading: false,
       };
     case GET_MY_PATIENT:
       return {
+        ...state,
         mypatient: action.payload,
+        loading: false,
+      };
+    case REPORTSTATS:
+      return {
+        ...state,
+        reportstats: action.payload,
+        loading: false,
+      };
+    case ARCHIVEDPATIENT:
+      return {
+        ...state,
+        unarchivedpatient: action.payload,
+        loading: false,
+      };
+    case GET_MY_ARCHIVEDPATIENT:
+      return {
+        ...state,
+        archivedpatient: action.payload,
         loading: false,
       };
     case GETSPECIFICPATIENT:
       return {
+        ...state,
         getspecificpatient: action.payload,
         loading: false,
       };

@@ -6,6 +6,8 @@ import {
   Button,
   Image,
   NavDropdown,
+  OverlayTrigger,
+  Tooltip,
 } from "react-bootstrap";
 import { FaGlobe } from "react-icons/fa";
 
@@ -39,6 +41,7 @@ const NavBar = () => {
             {user.firstname ? (
               <>
                 <Nav.Link href="/">Home</Nav.Link>
+                <Nav.Link href="/ArchivedPatients">Archived Patients</Nav.Link>
                 <Nav.Link href="about">About Us</Nav.Link>
 
                 {/* ✅ عرض الروابط فقط إذا لم يكن المستخدم دكتور */}
@@ -82,6 +85,22 @@ const NavBar = () => {
                 <Nav.Link href="/about">About Us</Nav.Link>
                 <Nav.Link href="/Login">Login</Nav.Link>
                 <Nav.Link href="/Signup">Registration</Nav.Link>
+                <OverlayTrigger
+                  placement="bottom"
+                  overlay={
+                    <Tooltip id="fundus-tooltip">
+                      refer for optician website
+                    </Tooltip>
+                  }
+                >
+                  <Nav.Link
+                    href="https://auge.cloud/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Auge.cloud
+                  </Nav.Link>
+                </OverlayTrigger>
                 <Button
                   variant="button-color"
                   className="ms-3 d-flex align-items-center gap-1 button-color"

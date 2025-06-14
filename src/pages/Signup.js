@@ -349,28 +349,42 @@ const SignupSection = () => {
               <option value="" disabled>
                 Select a Specialty
               </option>
-              <option value="Cardiology">Cardiology</option>
-              <option value="Dermatology">Dermatology</option>
-              <option value="Endocrinology">Endocrinology</option>
-              <option value="Gastroenterology">Gastroenterology</option>
-              <option value="Hematology">Hematology</option>
-              <option value="Neurology">Neurology</option>
-              <option value="Nephrology">Nephrology</option>
-              <option value="Oncology">Oncology</option>
-              <option value="Ophthalmology">Ophthalmology</option>
-              <option value="Orthopedics">Orthopedics</option>
-              <option value="Pediatrics">Pediatrics</option>
-              <option value="Psychiatry">Psychiatry</option>
-              <option value="Pulmonology">Pulmonology</option>
-              <option value="Radiology">Radiology</option>
-              <option value="Rheumatology">Rheumatology</option>
-              <option value="Urology">Urology</option>
-              <option value="General Surgery">General Surgery</option>
-              <option value="Internal Medicine">Internal Medicine</option>
-              <option value="Emergency Medicine">Emergency Medicine</option>
-              <option value="Family Medicine">Family Medicine</option>
-              <option value="Obstetrics and Gynecology">
-                Obstetrics and Gynecology
+              <option value="General Ophthalmology">
+                General Ophthalmology
+              </option>
+              <option value="Retina and Vitreous Surgery">
+                Retina and Vitreous Surgery
+              </option>
+              <option value="Glaucoma Specialist">Glaucoma Specialist</option>
+              <option value="Cornea and External Eye Diseases">
+                Cornea and External Eye Diseases
+              </option>
+              <option value="Cataract and Refractive Surgery">
+                Cataract and Refractive Surgery
+              </option>
+              <option value="Oculoplastic and Orbital Surgery">
+                Oculoplastic and Orbital Surgery
+              </option>
+              <option value="Pediatric Ophthalmology and Strabismus">
+                Pediatric Ophthalmology and Strabismus
+              </option>
+              <option value="Uveitis and Ocular Immunology">
+                Uveitis and Ocular Immunology
+              </option>
+              <option value="Neuro-Ophthalmology">Neuro-Ophthalmology</option>
+              <option value="Oncologic Ophthalmology">
+                Oncologic Ophthalmology
+              </option>
+              <option value="Ophthalmic Pathology">Ophthalmic Pathology</option>
+              <option value="Low Vision and Rehabilitation">
+                Low Vision and Rehabilitation
+              </option>
+              <option value="Contact Lens and Refraction">
+                Contact Lens and Refraction
+              </option>
+              <option value="Ophthalmic Genetics">Ophthalmic Genetics</option>
+              <option value="Ocular Trauma and Emergency Ophthalmology">
+                Ocular Trauma and Emergency Ophthalmology
               </option>
             </Form.Select>
           </Form.Group>

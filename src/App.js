@@ -15,6 +15,7 @@ import PatientPage from "../src/pages/PatientPage";
 import { ToastContainer } from "react-toastify";
 import VerifyEmail from "./pages/VerifyEmail";
 import PatientTableUI from "./pages/AllPatient";
+import ArchivedPatients from "./pages/ArchivePatient";
 import ReportsList from "./pages/ReportsList";
 import Career from "./pages/Career";
 import Team from "./pages/Team";
@@ -89,6 +90,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Examination />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ArchivedPatients"
+            element={
+              <ProtectedRoute>
+                <ArchivedPatients />
               </ProtectedRoute>
             }
           />

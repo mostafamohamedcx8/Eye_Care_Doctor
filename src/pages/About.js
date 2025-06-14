@@ -26,7 +26,7 @@ const AboutSection = () => {
 
       {/* Content Section */}
       <Container className="about-content text-center py-5">
-        <h2 className="section-title mb-4">Welcome to Optia Website</h2>
+        <h2 className="section-title mb-4">Welcome to Fundus.cloud Website</h2>
         <p className="section-paragraph mx-auto">
           Optia is a smart, AI-powered platform designed to support
           collaboration between opticians and doctors in delivering high-quality
