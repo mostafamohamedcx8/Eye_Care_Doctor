@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import store from "./Redux/story";
 import { Provider } from "react-redux";
-
+import "./i18n";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>

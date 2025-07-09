@@ -8,46 +8,44 @@ import {
   FaInstagram,
   FaLinkedinIn,
 } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+  const { t } = useTranslation();
   return (
     <div className="footer">
       <Container>
         <Row>
           <Col md={4}>
-            <h5>Company</h5>
+            <h5>{t("footer.company")}</h5>
             <ul>
               <li>
-                <a href="/about">About Us</a>
+                <a href="/about">{t("footer.about")}</a>
               </li>
               <li>
-                <a href="/career">Career</a>
+                <a href="/career">{t("footer.career")}</a>
               </li>
               <li>
-                <a href="/team">Team</a>
-              </li>
-              <li>
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a href="/protection">Protection</a>
+                <a href="/team">{t("footer.team")}</a>
               </li>
             </ul>
           </Col>
           <Col md={4}>
-            <h5>More</h5>
+            <h5>{t("footer.more")}</h5>
             <ul>
               <li>
-                <a href="/terms">Terms & Conditions</a>
+                <a href="/terms">{t("footer.terms")}</a>
               </li>
               <li>
-                <a href="/privacy">Privacy</a>
+                <a href="/privacy">{t("footer.privacy")}</a>
               </li>
               <li>
-                <a href="/advertise">Advertise</a>
+                <a href="/advertise">{t("footer.advertise")}</a>
               </li>
             </ul>
           </Col>
           <Col md={4}>
-            <h5>Social Media</h5>
+            <h5>{t("footer.social_media")}</h5>
             <div className="social-icons">
               <a href="#">
                 <FaFacebookF />

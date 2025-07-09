@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import Footer from "../component/Footer";
 import React from "react";
 import { Container, Row } from "react-bootstrap";
-
+import { useTranslation } from "react-i18next";
 const TermsSection = () => {
+  const { t } = useTranslation();
   return (
     <>
       {/* Hero Section */}
@@ -14,101 +15,89 @@ const TermsSection = () => {
           <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
-                Home
+                {t("termssection.breadcrumb_home")}
               </Link>
               <span className="separator">/</span>
-              <span className="active">Terms</span>
+              <span className="active">
+                {t("termssection.breadcrumb_terms")}
+              </span>
             </div>
-            <h1 className="title">Terms</h1>
+            <h1 className="title">{t("termssection.title")}</h1>
           </div>
         </div>
       </Row>
 
       {/* Content Section */}
       <Container className="py-5">
-        <h2>Terms and Conditions</h2>
-        <p>
-          <strong>Effective Date:</strong> 12.06.2025
-        </p>
-        <p>
-          <strong>Last Updated:</strong> 12.06.2025
-        </p>
+        <h2>{t("termssection.policy_title")}</h2>
+        <p>{t("termssection.effective_date")}</p>
+        <p>{t("termssection.last_updated")}</p>
 
-        <p>
-          Welcome to <strong>fundus.cloud</strong> ("we", "our", "us"). By
-          accessing or using our website{" "}
-          <a href="https://fundus.cloud">https://fundus.cloud</a>, you agree to
-          be bound by these Terms and Conditions. If you do not agree with any
-          part of these terms, you must not use our services.
-        </p>
+        <p dangerouslySetInnerHTML={{ __html: t("termssection.intro") }} />
 
-        <h5>1. Scope of Services</h5>
+        <h5>{t("termssection.scope_title")}</h5>
         <ul>
-          <li>Opticians upload eye images</li>
-          <li>Doctors review and provide feedback</li>
-          <li>AI tools generate preliminary suggestions</li>
+          {t("termssection.scope_items", { returnObjects: true }).map(
+            (item, index) => (
+              <li key={index}>{item}</li>
+            )
+          )}
         </ul>
-        <p>All services are currently offered free of charge.</p>
+        <p>{t("termssection.scope_note")}</p>
 
-        <h5>2. No Medical Treatment or Paid Services</h5>
-        <p>
-          We do not provide direct treatment or commercial services. The
-          platform supports—but does not replace—medical expertise.
-        </p>
+        <h5>{t("termssection.no_treatment_title")}</h5>
+        <p>{t("termssection.no_treatment_text")}</p>
 
-        <h5>3. User Eligibility and Responsibilities</h5>
+        <h5>{t("termssection.user_eligibility_title")}</h5>
         <ul>
-          <li>Only qualified opticians and doctors may use the platform</li>
-          <li>Users must upload lawful, accurate, and relevant medical data</li>
-          <li>System misuse is strictly prohibited</li>
+          {t("termssection.user_eligibility_items", {
+            returnObjects: true,
+          }).map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
         </ul>
 
-        <h5>4. Data Protection</h5>
-        <p>
-          We comply with GDPR and BDSG. Users must ensure patient consent is
-          obtained before uploading data. See our{" "}
-          <a href="/privacy">Privacy Policy</a> for full details.
-        </p>
+        <h5>{t("termssection.data_protection_title")}</h5>
+        <p
+          dangerouslySetInnerHTML={{
+            __html: t("termssection.data_protection_text"),
+          }}
+        />
 
-        <h5>5. Intellectual Property</h5>
-        <p>
-          All content belongs to <strong>fundus.cloud</strong> unless otherwise
-          noted. Users may not copy, alter, or redistribute any part without
-          written permission.
-        </p>
+        <h5>{t("termssection.intellectual_property_title")}</h5>
+        <p
+          dangerouslySetInnerHTML={{
+            __html: t("termssection.intellectual_property_text"),
+          }}
+        />
 
-        <h5>6. Limitation of Liability</h5>
+        <h5>{t("termssection.liability_title")}</h5>
         <ul>
-          <li>Accuracy of AI-generated output</li>
-          <li>Clinical decisions based on platform use</li>
-          <li>System downtime or data loss</li>
+          {t("termssection.liability_items", { returnObjects: true }).map(
+            (item, index) => (
+              <li key={index}>{item}</li>
+            )
+          )}
         </ul>
-        <p>Use is at the user’s own risk.</p>
+        <p>{t("termssection.liability_note")}</p>
 
-        <h5>7. Modification of Services</h5>
-        <p>
-          We reserve the right to update or suspend services at any time.
-          Changes will be announced via{" "}
-          <a href="https://fundus.cloud">https://fundus.cloud</a>.
-        </p>
+        <h5>{t("termssection.modification_title")}</h5>
+        <p
+          dangerouslySetInnerHTML={{
+            __html: t("termssection.modification_text"),
+          }}
+        />
 
-        <h5>8. Termination of Access</h5>
-        <p>
-          We may suspend users who violate terms or upload harmful/illegal
-          content.
-        </p>
+        <h5>{t("termssection.termination_title")}</h5>
+        <p>{t("termssection.termination_text")}</p>
 
-        <h5>9. Governing Law and Jurisdiction</h5>
-        <p>
-          German law applies. Disputes fall under German courts’ jurisdiction.
-        </p>
+        <h5>{t("termssection.governing_law_title")}</h5>
+        <p>{t("termssection.governing_law_text")}</p>
 
-        <h5>10. Contact</h5>
-        <p>
-          Email: <a href="mailto:ahmadsfar@gmail.com">ahmadsfar@gmail.com</a>
-          <br />
-          Website: <a href="https://fundus.cloud">fundus.cloud</a>
-        </p>
+        <h5>{t("termssection.contact_title")}</h5>
+        <p
+          dangerouslySetInnerHTML={{ __html: t("termssection.contact_text") }}
+        />
       </Container>
     </>
   );

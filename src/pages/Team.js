@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import Footer from "../component/Footer";
 import React from "react";
 import { Container, Row } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const TeamSection = () => {
+  const { t } = useTranslation();
   return (
     <>
       {/* Hero Section */}
@@ -14,33 +16,41 @@ const TeamSection = () => {
           <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
-                Home
+                {t("team.breadcrumb_home")}
               </Link>
               <span className="separator">/</span>
-              <span className="active">Team</span>
+              <span className="active">{t("team.breadcrumb_team")}</span>
             </div>
-            <h1 className="title">Team</h1>
+            <h1 className="title">{t("team.title")}</h1>
           </div>
         </div>
       </Row>
 
       {/* Content Section */}
       <Container className="py-5">
-        <h2>Our Team</h2>
-        <p>
-          Our multidisciplinary team is made up of healthcare professionals, AI
-          engineers, and UX designers — all working together to empower
-          opticians and doctors through intelligent eye disease detection.
-        </p>
-        <h5>Core Team Members:</h5>
-        <ul>
-          <li>Dr. Ahmed Khaled – Ophthalmologist & Medical Advisor</li>
-          <li>
-            Eng. Mostafa Mohamed – Full Stack Developer & AI Integration Lead
-          </li>
-          <li>Sara Nabil – Optician Lead</li>
-          <li>Youssef Gamal – UI/UX Designer</li>
-        </ul>
+        <h2 className="text-center mb-4">{t("team.section_title")}</h2>
+
+        <div className="mb-4">
+          <h4 className="text-primary">{t("team.supervisory_team")}</h4>
+          <ul className="list-unstyled">
+            <li>{t("team.supervisor_1")}</li>
+            <li>{t("team.supervisor_2")}</li>
+          </ul>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-primary">{t("team.development_team")}</h4>
+          <ul className="list-unstyled">
+            <li>{t("team.developer_1")}</li>
+            <li>{t("team.developer_2")}</li>
+            <li>{t("team.developer_3")}</li>
+            <li>{t("team.developer_4")}</li>
+            <li>{t("team.developer_5")}</li>
+            <li>{t("team.developer_6")}</li>
+            <li>{t("team.developer_7")}</li>
+            <li>{t("team.developer_8")}</li>
+          </ul>
+        </div>
       </Container>
     </>
   );

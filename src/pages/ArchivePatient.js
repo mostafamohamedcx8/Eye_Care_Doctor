@@ -22,8 +22,9 @@ import {
   getREPORTSTATS,
 } from "../Redux/actions/Patientaction";
 import notify from "../Hook/useNotification";
-
+import { useTranslation } from "react-i18next";
 const PatientTableUI = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [keyword, setKeyword] = useState("");
@@ -82,37 +83,29 @@ const PatientTableUI = () => {
   };
 
   const res = useSelector((state) => state.allpatient.deletpatient);
+
   useEffect(() => {
     if (loading === false) {
       if (res === "") {
-        notify("Patient deleted successfully", "success");
+        notify(t("archivedpatienttableui.success_delete_message"), "success");
         setTimeout(() => {
           window.location.reload(false);
         }, 1000);
       } else {
-        notify("There was a problem with the deletion", "error");
+        notify(t("archivedpatienttableui.error_delete_message"), "error");
       }
     }
   }, [loading]);
 
   const handleToggleArchive = async (patientId) => {
     try {
-      // تعيين loading للمريض المحدد
       setArchiveLoading((prev) => ({ ...prev, [patientId]: true }));
-
-      // استدعاء الـ action
       await dispatch(toggleArchivePatient(patientId));
-
-      // إعادة تحميل البيانات بعد نجاح العملية
       setRefreshData((prev) => !prev);
-
-      // إظهار رسالة نجاح (اختياري)
-      // يمكنك استخدام toast أو alert
-      notify("Patient archive status updated successfully!", "success");
+      notify(t("archivedpatienttableui.success_archive_message"), "success");
     } catch (error) {
-      notify("Faild updating patient archive status", "error");
+      notify(t("archivedpatienttableui.error_archive_message"), "error");
     } finally {
-      // إلغاء loading
       setArchiveLoading((prev) => ({ ...prev, [patientId]: false }));
     }
   };
@@ -132,13 +125,13 @@ const PatientTableUI = () => {
       <NavBar />
       <Container className="mt-5">
         <h2 className="text-center mb-4 fw-bold button-color">
-          Archived Patients
+          {t("archivedpatienttableui.title")}
         </h2>
 
         <Row className="mb-3">
           <Col md={6}>
             <Form.Control
-              placeholder="Search by name..."
+              placeholder={t("archivedpatienttableui.search_placeholder")}
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
@@ -148,25 +141,27 @@ const PatientTableUI = () => {
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Date of Birth</th>
-              <th>AI Report Count</th>
+              <th>{t("archivedpatienttableui.table_headers.index")}</th>
+              <th>{t("archivedpatienttableui.table_headers.name")}</th>
+              <th>{t("archivedpatienttableui.table_headers.date_of_birth")}</th>
+              <th>
+                {t("archivedpatienttableui.table_headers.ai_report_count")}
+              </th>
               <th
                 data-bs-toggle="tooltip"
                 data-bs-placement="top"
-                title="Seen & Feedback"
+                title={t("archivedpatienttableui.tooltip_report_status")}
               >
-                Report Status
+                {t("archivedpatienttableui.table_headers.report_status")}
               </th>
-              <th>Tools</th>
+              <th>{t("archivedpatienttableui.table_headers.tools")}</th>
             </tr>
           </thead>
           <tbody>
             {Loading ? (
               <tr>
                 <td colSpan="7" className="text-center">
-                  Loading...
+                  {t("archivedpatienttableui.loading_text")}
                 </td>
               </tr>
             ) : AllPatient.length > 0 ? (
@@ -235,7 +230,9 @@ const PatientTableUI = () => {
 
                       if (!stats)
                         return (
-                          <span className="text-muted">لا يوجد بيانات</span>
+                          <span className="text-muted">
+                            {t("archivedpatienttableui.no_stats_text")}
+                          </span>
                         );
 
                       return (
@@ -261,7 +258,9 @@ const PatientTableUI = () => {
                     </button>
                     <button
                       className="btn btn-sm btn-outline-secondary"
-                      title="Remove from Archive"
+                      title={t(
+                        "archivedpatienttableui.remove_from_archive_tooltip"
+                      )}
                       onClick={(e) => handleToggleArchive(patient._id, e)}
                       disabled={archiveLoading[patient._id]}
                     >
@@ -274,7 +273,7 @@ const PatientTableUI = () => {
             ) : (
               <tr>
                 <td colSpan="7" className="text-center">
-                  No patients found.
+                  {t("archivedpatienttableui.no_patients_text")}
                 </td>
               </tr>
             )}

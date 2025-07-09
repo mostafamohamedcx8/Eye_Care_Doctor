@@ -17,8 +17,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { CreateUser } from "../Redux/actions/Useraction";
 import { validateSignupForm } from "../Validations/validateSignupForm";
 import notify from "../Hook/useNotification";
+import { useTranslation } from "react-i18next";
 
 const SignupSection = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState("");
@@ -62,9 +64,9 @@ const SignupSection = () => {
     setPassword("");
     setConfirmPassword("");
     setsalutation("");
-    setDateOfBirthDay("Day");
-    setDateOfBirthMonth("Month");
-    setDateOfBirthYear("Year");
+    setDateOfBirthDay(t("signupsection.day_option"));
+    setDateOfBirthMonth(t("signupsection.month_option"));
+    setDateOfBirthYear(t("signupsection.year_option"));
     setSelectedState("");
     setSelectedcity("");
     setFullAddress("");
@@ -90,6 +92,7 @@ const SignupSection = () => {
       state: selectedState,
       city: selectedcity,
       fullAddress,
+      t,
     });
 
     if (!isValid) return; // لو فيه خطأ ميفتحش المودال
@@ -155,6 +158,7 @@ const SignupSection = () => {
       city: selectedcity,
       Specialty: specialty,
       fullAddress,
+      t,
     });
 
     if (!isValid) return;
@@ -173,20 +177,20 @@ const SignupSection = () => {
 
       if (User?.status === 201) {
         resetFormFields();
-        notify(
-          "Account created. Please check your email for the verification link.",
-          "success"
-        );
+        notify(t("signupsection.success_message"), "success");
         navigate("/Login");
       } else if (User?.data?.errors?.[0]?.msg === "Email already exists") {
         console.log(User?.data?.errors?.[0]?.msg);
-        notify("Email already exists", "warn");
+        notify(t("signupsection.email_exists_warning"), "warn");
       } else {
-        notify(User?.data?.message || "There is a problem", "error");
+        notify(
+          User?.data?.message || t("signupsection.error_message"),
+          "error"
+        );
       }
 
       setTimeout(() => {
-        setloading(true); // يرجع الزر لحالته الطبيعية
+        setloading(true);
       }, 1500);
     }
   }, [loading, User]);
@@ -198,12 +202,14 @@ const SignupSection = () => {
           <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
-                Home
+                {t("signupsection.breadcrumb_home")}
               </Link>
               <span className="separator">/</span>
-              <span className="active">Registration</span>
+              <span className="active">
+                {t("signupsection.breadcrumb_registration")}
+              </span>
             </div>
-            <h1 className="title">Sign Up</h1>
+            <h1 className="title">{t("signupsection.title")}</h1>
           </div>
         </div>
       </Row>
@@ -213,16 +219,16 @@ const SignupSection = () => {
         className="mt-5 mb-5 p-4 border rounded shadow"
         style={{ maxWidth: "600px", backgroundColor: "#f8f9fa" }}
       >
-        <h3 className="text-center mb-4">Sign Up</h3>
+        <h3 className="text-center mb-4">{t("signupsection.form_title")}</h3>
 
         <Form onSubmit={handleShowModal}>
           <Row>
             <Col>
               <Form.Group className="mb-3">
-                <Form.Label>First Name</Form.Label>
+                <Form.Label>{t("signupsection.first_name_label")}</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter first name"
+                  placeholder={t("signupsection.first_name_placeholder")}
                   value={firstname}
                   onChange={(e) => setFirstname(e.target.value)}
                 />
@@ -230,10 +236,10 @@ const SignupSection = () => {
             </Col>
             <Col>
               <Form.Group className="mb-3">
-                <Form.Label>Last Name</Form.Label>
+                <Form.Label>{t("signupsection.last_name_label")}</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter last name"
+                  placeholder={t("signupsection.last_name_placeholder")}
                   value={lastname}
                   onChange={(e) => setLastname(e.target.value)}
                 />
@@ -242,14 +248,14 @@ const SignupSection = () => {
           </Row>
 
           {/* تاريخ الميلاد */}
-          <Form.Label>Date of Birth</Form.Label>
+          <Form.Label>{t("signupsection.date_of_birth_label")}</Form.Label>
           <Row className="mb-3">
             <Col>
               <Form.Select
                 value={dateOfBirthDay}
                 onChange={(e) => setDateOfBirthDay(e.target.value)}
               >
-                <option>Day</option>
+                <option>{t("signupsection.day_option")}</option>
                 {Array.from({ length: 31 }, (_, i) => (
                   <option key={i + 1}>{i + 1}</option>
                 ))}
@@ -260,25 +266,14 @@ const SignupSection = () => {
                 value={dateOfBirthMonth}
                 onChange={(e) => setDateOfBirthMonth(e.target.value)}
               >
-                <option>Month</option>
-                {[
-                  "January",
-                  "February",
-                  "March",
-                  "April",
-                  "May",
-                  "June",
-                  "July",
-                  "August",
-                  "September",
-                  "October",
-                  "November",
-                  "December",
-                ].map((month, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {month}
-                  </option>
-                ))}
+                <option value="">{t("signupsection.month_option")}</option>
+                {t("signupsection.months", { returnObjects: true }).map(
+                  (monthLabel, i) => (
+                    <option key={i} value={i + 1}>
+                      {monthLabel}
+                    </option>
+                  )
+                )}
               </Form.Select>
             </Col>
             <Col>
@@ -286,7 +281,7 @@ const SignupSection = () => {
                 value={dateOfBirthYear}
                 onChange={(e) => setDateOfBirthYear(e.target.value)}
               >
-                <option>Year</option>
+                <option>{t("signupsection.year_option")}</option>
                 {Array.from({ length: 100 }, (_, i) => {
                   const year = new Date().getFullYear() - i;
                   return <option key={year}>{year}</option>;
@@ -296,109 +291,82 @@ const SignupSection = () => {
           </Row>
 
           <Form.Group className="mb-3">
-            <Form.Label>Salutation</Form.Label>
+            <Form.Label>{t("signupsection.salutation_label")}</Form.Label>
             <Form.Select
               value={salutation}
               onChange={(e) => setsalutation(e.target.value)}
             >
               <option value="" disabled hidden>
-                Select Salutation
+                {t("signupsection.salutation_placeholder")}
               </option>
-              <option value="Mr">Mr</option>
-              <option value="Mrs">Mrs</option>
-              <option value="Ms">Ms</option>
-              <option value="Mx">Mx</option>
+              {t("signupsection.salutations", { returnObjects: true }).map(
+                (sal, index) => (
+                  <option key={index} value={sal.value}>
+                    {sal.label}
+                  </option>
+                )
+              )}
             </Form.Select>
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Email address</Form.Label>
+            <Form.Label>{t("signupsection.email_label")}</Form.Label>
             <Form.Control
               type="email"
-              placeholder="Enter email"
+              placeholder={t("signupsection.email_placeholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>{t("signupsection.password_label")}</Form.Label>
             <Form.Control
               type="password"
-              placeholder="Password"
+              placeholder={t("signupsection.password_placeholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Group>
 
           <Form.Group className="mb-4">
-            <Form.Label>Confirm Password</Form.Label>
+            <Form.Label>{t("signupsection.confirm_password_label")}</Form.Label>
             <Form.Control
               type="password"
-              placeholder="Confirm Password"
+              placeholder={t("signupsection.confirm_password_placeholder")}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </Form.Group>
           <Form.Group className="mb-4">
-            <Form.Label>Specialty</Form.Label>
+            <Form.Label>{t("signupsection.specialty_label")}</Form.Label>
             <Form.Select
               value={specialty}
               onChange={(e) => setSpecialty(e.target.value)}
             >
               <option value="" disabled>
-                Select a Specialty
+                {t("signupsection.specialty_placeholder")}
               </option>
-              <option value="General Ophthalmology">
-                General Ophthalmology
-              </option>
-              <option value="Retina and Vitreous Surgery">
-                Retina and Vitreous Surgery
-              </option>
-              <option value="Glaucoma Specialist">Glaucoma Specialist</option>
-              <option value="Cornea and External Eye Diseases">
-                Cornea and External Eye Diseases
-              </option>
-              <option value="Cataract and Refractive Surgery">
-                Cataract and Refractive Surgery
-              </option>
-              <option value="Oculoplastic and Orbital Surgery">
-                Oculoplastic and Orbital Surgery
-              </option>
-              <option value="Pediatric Ophthalmology and Strabismus">
-                Pediatric Ophthalmology and Strabismus
-              </option>
-              <option value="Uveitis and Ocular Immunology">
-                Uveitis and Ocular Immunology
-              </option>
-              <option value="Neuro-Ophthalmology">Neuro-Ophthalmology</option>
-              <option value="Oncologic Ophthalmology">
-                Oncologic Ophthalmology
-              </option>
-              <option value="Ophthalmic Pathology">Ophthalmic Pathology</option>
-              <option value="Low Vision and Rehabilitation">
-                Low Vision and Rehabilitation
-              </option>
-              <option value="Contact Lens and Refraction">
-                Contact Lens and Refraction
-              </option>
-              <option value="Ophthalmic Genetics">Ophthalmic Genetics</option>
-              <option value="Ocular Trauma and Emergency Ophthalmology">
-                Ocular Trauma and Emergency Ophthalmology
-              </option>
+              {t("signupsection.specialty_options", {
+                returnObjects: true,
+              }).map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
             </Form.Select>
           </Form.Group>
 
           {/* العنوان */}
           <Form.Group className="mb-3">
-            <Form.Label>State</Form.Label>
+            <Form.Label>{t("signupsection.state_label")}</Form.Label>
             <Form.Select
               name="state"
-              value={selectedState} // لازم تربطه بالقيمة الحالية
+              value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
             >
               <option value="" disabled>
-                Select German State
+                {t("signupsection.state_placeholder")}
               </option>
               {states.map((state) => (
                 <option key={state.isoCode} value={state.isoCode}>
@@ -408,39 +376,40 @@ const SignupSection = () => {
             </Form.Select>
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>City</Form.Label>
+            <Form.Label>{t("signupsection.city_label")}</Form.Label>
             <Form.Select
               value={selectedcity}
               onChange={(e) => setSelectedcity(e.target.value)}
             >
-              <option>Select City</option>
+              <option>{t("signupsection.city_placeholder")}</option>
               {cities.map((city, i) => (
                 <option key={i}>{city.name}</option>
               ))}
             </Form.Select>
           </Form.Group>
+
           <Form.Group className="mb-4">
-            <Form.Label>Postal Code</Form.Label>
+            <Form.Label>{t("signupsection.postal_code_label")}</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter your Postal Code (12564)"
+              placeholder={t("signupsection.postal_code_placeholder")}
               value={postalCode}
               onChange={(e) => setPostalCode(e.target.value)}
             />
           </Form.Group>
 
           <Form.Group className="mb-4">
-            <Form.Label>Full Address</Form.Label>
+            <Form.Label>{t("signupsection.full_address_label")}</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter your address (street..)"
+              placeholder={t("signupsection.full_address_placeholder")}
               value={fullAddress}
               onChange={(e) => setFullAddress(e.target.value)}
             />
           </Form.Group>
 
           <Button type="submit" className="w-100 mb-2 welcome-button">
-            Sign Up
+            {t("signupsection.signup_button")}
           </Button>
         </Form>
         {ispress ? (
@@ -453,11 +422,11 @@ const SignupSection = () => {
       </Container>
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Medical license Or Shop license </Modal.Title>
+          <Modal.Title>{t("signupsection.modal_title")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Medical license Or Shop license</Form.Label>
+            <Form.Label>{t("signupsection.modal_label")}</Form.Label>
             <Form.Control
               type="file"
               accept="image/*"
@@ -467,17 +436,17 @@ const SignupSection = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
-            Cancel
+            {t("signupsection.modal_cancel_button")}
           </Button>
           <Button
             variant="primary"
             onClick={(e) => {
               handleCloseModal();
-              handelSubmit(e); // ← نفذ السبميت بعد رفع الصورة
+              handelSubmit(e);
             }}
-            disabled={!imagemedicallicense} // اعمل تعطيل للزر لو مفيش صورة
+            disabled={!imagemedicallicense}
           >
-            Confirm & Sign Up
+            {t("signupsection.modal_confirm_button")}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -7,13 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { verifyPassword } from "../Redux/actions/Useraction";
 import notify from "../Hook/useNotification";
 import { Button, Container, Form, Row, Card, Spinner } from "react-bootstrap";
-
+import { useTranslation } from "react-i18next";
 const OTPSection = () => {
   const dispatch = useDispatch();
   const Navigate = useNavigate();
   const [resetCode, setResetCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [ispress, setispress] = useState(false);
+  const { t } = useTranslation();
   const HandelSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -33,12 +34,12 @@ const OTPSection = () => {
     if (loading === false) {
       if (res) {
         if (res.message === "Reset code verified successfully") {
-          notify("Reset code verified successfully", "success");
+          notify(t("otpCode.notifySuccess"), "success");
           setTimeout(() => {
             Navigate("/NewPassword");
           }, 1000);
         } else if (res.data.message === "Invalid or expired reset code") {
-          notify("Invalid or expired reset code", "error");
+          notify(t("otpCode.notifyError"), "error");
         }
         setLoading(true);
       }
@@ -53,12 +54,16 @@ const OTPSection = () => {
           <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
-                Home
+                {t("otpCode.breadcrumbHome")}
               </Link>
-              <span className="separator">/</span>
-              <span className="active">Reset Password</span>
+              <span className="separator">
+                {t("otpCode.breadcrumbSeparator")}
+              </span>
+              <span className="active">
+                {t("otpCode.breadcrumbResetPassword")}
+              </span>
             </div>
-            <h1 className="title">Verify Your Identity</h1>
+            <h1 className="title">{t("otpCode.title")}</h1>
           </div>
         </div>
       </Row>
@@ -70,9 +75,9 @@ const OTPSection = () => {
       >
         <Card style={{ width: "100%", maxWidth: "400px" }}>
           <Card.Body>
-            <h4 className="text-center mb-3">Enter Verification Code</h4>
+            <h4 className="text-center mb-3">{t("otpCode.formHeading")}</h4>
             <p className="text-center text-muted mb-4">
-              Please enter the 6-digit code that was sent to your email address.
+              {t("otpCode.instructionText")}
             </p>
 
             <Form>
@@ -80,7 +85,7 @@ const OTPSection = () => {
                 <Form.Control
                   type="text"
                   maxLength="6"
-                  placeholder="Enter verification code"
+                  placeholder={t("otpCode.codePlaceholder")}
                   value={resetCode}
                   onChange={(e) => setResetCode(e.target.value)}
                 />
@@ -92,13 +97,13 @@ const OTPSection = () => {
                   className="w-100 mb-2"
                   variant="secondary"
                 >
-                  Cancel
+                  {t("otpCode.cancelButton")}
                 </Button>
                 <Button
                   className="w-100 mb-2 welcome-button"
                   onClick={HandelSubmit}
                 >
-                  Verify
+                  {t("otpCode.verifyButton")}
                 </Button>
               </div>
             </Form>
@@ -108,7 +113,7 @@ const OTPSection = () => {
           loading ? (
             <Spinner animation="border" variant="primary" />
           ) : (
-            <h4> done </h4>
+            <h4> {t("otpCode.done")} </h4>
           )
         ) : null}
       </Container>

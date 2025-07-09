@@ -8,16 +8,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { ForgetPassword } from "../Redux/actions/Useraction";
 import { validateForgetPassword } from "../Validations/validateSignupForm";
 import notify from "../Hook/useNotification";
+import { useTranslation } from "react-i18next";
 const ResetSection = () => {
   const dispatch = useDispatch();
   const Navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [ispress, setispress] = useState(false);
+  const { t } = useTranslation();
   const HandelSubmit = async (e) => {
     e.preventDefault();
 
-    const isValid = validateForgetPassword({ email });
+    const isValid = validateForgetPassword({ email, t });
     if (!isValid) return;
     localStorage.setItem("user-email", email);
     setLoading(true);
@@ -37,32 +39,36 @@ const ResetSection = () => {
     if (loading === false) {
       if (res) {
         if (res.message === "Check your email for further instructions") {
-          notify("Check your Email for Reset Code", "success");
+          notify(t("resetPassword.notifySuccess"), "success");
           setTimeout(() => {
             Navigate("/OtpCode");
           }, 1000);
         } else if (res.data.message === "No user found with this email") {
-          notify("No user with this email", "error");
+          notify(t("resetPassword.notifyError"), "error");
         }
         setLoading(true);
       }
     }
-  }, [loading]);
+  }, [loading, t]);
 
   return (
     <>
       {/* Hero Section */}
       <Row>
-        <div className="hero-section">
+        <div className=" hero-section">
           <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
-                Home
+                {t("resetPassword.breadcrumbHome")}
               </Link>
-              <span className="separator">/</span>
-              <span className="active">Reset Password</span>
+              <span className="separator">
+                {t("resetPassword.breadcrumbSeparator")}
+              </span>
+              <span className="active">
+                {t("resetPassword.breadcrumbResetPassword")}
+              </span>
             </div>
-            <h1 className="title">Reset Your Password</h1>
+            <h1 className="title">{t("resetPassword.title")}</h1>
           </div>
         </div>
       </Row>
@@ -74,16 +80,18 @@ const ResetSection = () => {
       >
         <Card style={{ width: "100%", maxWidth: "400px" }}>
           <Card.Body>
-            <h4 className="text-center mb-3">Find Your Account</h4>
+            <h4 className="text-center mb-3">
+              {t("resetPassword.formHeading")}
+            </h4>
             <p className="text-center text-muted mb-4">
-              Please Enter Your E-mail To Receive OTP To Reset Your Password.
+              {t("resetPassword.instructionText")}
             </p>
 
             <Form>
               <Form.Group className="mb-3">
                 <Form.Control
                   type="email"
-                  placeholder="Email address"
+                  placeholder={t("resetPassword.emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -95,13 +103,13 @@ const ResetSection = () => {
                   className="w-100 mb-2"
                   variant="secondary"
                 >
-                  Cancel
+                  {t("resetPassword.cancelButton")}
                 </Button>
                 <Button
                   className="w-100 mb-2 welcome-button"
                   onClick={HandelSubmit}
                 >
-                  Searchs
+                  {t("resetPassword.searchButton")}
                 </Button>
               </div>
             </Form>
@@ -111,7 +119,7 @@ const ResetSection = () => {
           loading ? (
             <Spinner animation="border" variant="primary" />
           ) : (
-            <h4> done </h4>
+            <h4> {t("resetPassword.done")} </h4>
           )
         ) : null}
       </Container>

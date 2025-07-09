@@ -1,6 +1,8 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
+import { useTranslation } from "react-i18next";
 const Paginationcomponent = ({ pagecount, onpress }) => {
+  const { t } = useTranslation();
   const handlePageClick = (data) => {
     onpress(data.selected + 1);
   };
@@ -9,12 +11,12 @@ const Paginationcomponent = ({ pagecount, onpress }) => {
     <div className="d-flex justify-content-center mt-3">
       <ReactPaginate
         breakLabel="..."
-        nextLabel="next >"
+        nextLabel={`${t("pagination.next_label")} >`}
         onPageChange={handlePageClick}
         marginPagesDisplayed={1}
         pageRangeDisplayed={1}
         pageCount={pagecount}
-        previousLabel="< previous"
+        previousLabel={`< ${t("pagination.previous_label")}`}
         renderOnZeroPageCount={null}
         containerClassName="pagination"
         pageClassName="page-item"

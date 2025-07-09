@@ -9,19 +9,19 @@ const Header = () => {
           <Col xs={12}>
             <div className="d-flex flex-wrap justify-content-center justify-content-sm-start gap-3 py-2">
               <a
-                href="tel:+201068396936"
+                href="tel:+493046690616"
                 className="d-flex align-items-center text-decoration-none site-text-info"
               >
                 <FaPhone className="me-2 icon-color" />
-                +20 01068396936
+                +49 3046690616
               </a>
               <span className="text-muted">|</span>
               <a
-                href="mailto:yasminashraf048@gmail.com"
+                href="mailto:support@augenarzt.cloud"
                 className="d-flex align-items-center text-decoration-none site-text-info"
               >
                 <FaEnvelope className="me-2 icon-color" />
-                yasminashraf048@gmail.com
+                support@augenarzt.cloud
               </a>
             </div>
           </Col>

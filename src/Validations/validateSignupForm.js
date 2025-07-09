@@ -18,106 +18,96 @@ export const validateSignupForm = ({
   salutation,
   state,
   city,
-  Specialty,
   fullAddress,
   postalCode,
+  t, // Add t as a parameter
 }) => {
   if (!firstname.trim()) {
-    notify("First name is required", "warn");
+    notify(t("Signupvalidation.notifyFirstNameRequired"), "warn");
     return false;
   }
   if (!lastname.trim()) {
-    notify("Last name is required", "warn");
+    notify(t("Signupvalidation.notifyLastNameRequired"), "warn");
     return false;
   }
   if (!email.trim()) {
-    notify("Email is required", "warn");
+    notify(t("Signupvalidation.notifyEmailRequired"), "warn");
     return false;
   }
-
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    notify("Invalid email format", "warn");
+    notify(t("Signupvalidation.notifyInvalidEmail"), "warn");
     return false;
   }
   if (!password) {
-    notify("Password is required", "warn");
+    notify(t("Signupvalidation.notifyPasswordRequired"), "warn");
     return false;
   }
   if (password.length < 6) {
-    notify("Password must be at least 6 characters", "warn");
+    notify(t("Signupvalidation.notifyPasswordLength"), "warn");
     return false;
   }
   if (password !== passwordConfirm) {
-    notify("Passwords do not match", "warn");
-    return false;
-  }
-  if (!Specialty) {
-    notify("Specialty is required", "warn");
+    notify(t("Signupvalidation.notifyPasswordsMismatch"), "warn");
     return false;
   }
   if (!dateOfBirthDay || !dateOfBirthMonth || !dateOfBirthYear) {
-    notify("Complete Date of Birth is required", "warn");
+    notify(t("Signupvalidation.notifyDateOfBirthRequired"), "warn");
     return false;
   }
   if (!salutation) {
-    notify("salutation is required", "warn");
+    notify(t("Signupvalidation.notifySalutationRequired"), "warn");
     return false;
   }
   if (!state) {
-    notify("State is required", "warn");
+    notify(t("Signupvalidation.notifyStateRequired"), "warn");
     return false;
   }
   if (!city) {
-    notify("City is required", "warn");
+    notify(t("Signupvalidation.notifyCityRequired"), "warn");
     return false;
   }
   if (!postalCode || !/^\d{5}$/.test(postalCode)) {
-    notify("Postal Code must be exactly 5 digits", "warn");
+    notify(t("Signupvalidation.notifyPostalCodeInvalid"), "warn");
     return false;
   }
   if (!fullAddress.trim()) {
-    notify("Full address is required", "warn");
+    notify(t("Signupvalidation.notifyFullAddressRequired"), "warn");
     return false;
   }
 
   return true;
 };
 
-export const validateLogin = ({ email, password, role }) => {
-  // فحص الإيميل
+export const validateLogin = ({ email, password, t }) => {
   if (!email || email.trim() === "") {
-    notify("Email is required", "warn");
+    notify(t("Signupvalidation.notifyEmailRequired"), "warn");
     return false;
   }
 
-  // صيغة الإيميل
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    notify("Invalid email format", "warn");
+    notify(t("Signupvalidation.notifyInvalidEmail"), "warn");
     return false;
   }
 
-  // فحص كلمة المرور
   if (!password || password.length < 6) {
-    notify("Password must be at least 6 characters", "warn");
+    notify(t("Signupvalidation.notifyPasswordLength"), "warn");
     return false;
   }
 
   return true;
 };
 
-export const validateForgetPassword = ({ email, password, role }) => {
-  // فحص الإيميل
+export const validateForgetPassword = ({ email, t }) => {
   if (!email || email.trim() === "") {
-    notify("Email is required", "warn");
+    notify(t("Signupvalidation.notifyEmailRequired"), "warn");
     return false;
   }
 
-  // صيغة الإيميل
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    notify("Invalid email format", "warn");
+    notify(t("Signupvalidation.notifyInvalidEmail"), "warn");
     return false;
   }
 
@@ -127,17 +117,18 @@ export const validateForgetPassword = ({ email, password, role }) => {
 export const validationResetPassword = ({
   newpassword,
   confirmnewPassword,
+  t,
 }) => {
   if (!newpassword) {
-    notify("Password is required", "warn");
+    notify(t("Signupvalidation.notifyPasswordRequired"), "warn");
     return false;
   }
   if (newpassword.length < 6) {
-    notify("Password must be at least 6 characters", "warn");
+    notify(t("Signupvalidation.notifyPasswordLength"), "warn");
     return false;
   }
   if (newpassword !== confirmnewPassword) {
-    notify("Passwords do not match", "warn");
+    notify(t("Signupvalidation.notifyPasswordsMismatch"), "warn");
     return false;
   }
   return true;

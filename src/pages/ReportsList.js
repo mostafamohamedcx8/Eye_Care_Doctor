@@ -18,8 +18,10 @@ import {
 } from "./../Redux/actions/Reportaction";
 import { useParams, useNavigate } from "react-router-dom";
 import notify from "../Hook/useNotification";
+import { useTranslation } from "react-i18next";
 
 const ReportsList = () => {
+  const { t } = useTranslation();
   const [isNavigating, setIsNavigating] = useState(false);
   const userFromStorage = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
@@ -85,7 +87,7 @@ const ReportsList = () => {
     return (
       <div className="text-center my-5">
         <Spinner animation="border" variant="primary" />
-        <p>Loading patient report...</p>
+        <p>{t("reports.loading")}</p>
       </div>
     );
   }
@@ -96,13 +98,13 @@ const ReportsList = () => {
       <NavBar />
       <Container className="my-4">
         <h2 className="text-center mb-4 fw-bold button-color">
-          Patient Reports
+          {t("reports.title")}
         </h2>
         <Row>
           {Report?.reports?.length === 0 ? (
             <Col>
               <p className="text-center text-danger fw-bold">
-                No reports available
+                {t("reports.no_reports")}
               </p>
             </Col>
           ) : (
@@ -128,8 +130,11 @@ const ReportsList = () => {
                     <Card.Body>
                       <div className="d-flex justify-content-between align-items-center mb-2">
                         <Card.Title className="mb-0">
-                          Report Date:{" "}
-                          {new Date(report?.createdAt).toLocaleDateString()}
+                          {t("reports.report_date", {
+                            date: new Date(
+                              report?.createdAt
+                            ).toLocaleDateString(),
+                          })}
                         </Card.Title>
                         {userFromStorage?.role !== "doctor" && (
                           <button
@@ -142,28 +147,34 @@ const ReportsList = () => {
                       </div>
 
                       <Card.Subtitle className="mb-2 text-muted">
-                        RightEye visusCC:{" "}
-                        {report?.eyeExamination?.rightEye?.visusCC}
+                        {t("reports.right_eye_visus", {
+                          value:
+                            report?.eyeExamination?.rightEye?.visusCC || "N/A",
+                        })}
                       </Card.Subtitle>
                       <Card.Subtitle className="mb-2 text-muted">
-                        LeftEye visusCC:{" "}
-                        {report?.eyeExamination?.leftEye?.visusCC}
+                        {t("reports.left_eye_visus", {
+                          value:
+                            report?.eyeExamination?.leftEye?.visusCC || "N/A",
+                        })}
                       </Card.Subtitle>
 
                       {predictionsToShow ? (
                         <>
                           <Card.Text className="fw-bold mb-1">
-                            Model Prediction - {predictionLabel}
+                            {t("reports.model_prediction")} - {predictionLabel}
                           </Card.Text>
 
                           {/* جودة الصورة */}
                           {predictionsToShow.image_quality && (
                             <Card.Text className="text-warning">
                               <strong>Image Quality:</strong>{" "}
-                              {predictionsToShow.image_quality.status} (
-                              {predictionsToShow.image_quality.confidence ??
-                                "N/A"}
-                              %)
+                              {t("reports.image_quality", {
+                                status: predictionsToShow.image_quality.status,
+                                confidence:
+                                  predictionsToShow.image_quality.confidence ??
+                                  "N/A",
+                              })}
                             </Card.Text>
                           )}
 
@@ -177,8 +188,10 @@ const ReportsList = () => {
                             )
                             .map(([diseaseName, details]) => (
                               <Card.Text key={diseaseName}>
-                                <strong>{diseaseName}</strong> detected at{" "}
-                                <strong>{details.confidence ?? "N/A"}%</strong>
+                                {t("reports.disease_detected", {
+                                  disease: diseaseName,
+                                  confidence: details.confidence ?? "N/A",
+                                })}
                               </Card.Text>
                             ))}
 
@@ -189,11 +202,11 @@ const ReportsList = () => {
                               key !== "eye_side" &&
                               value.status === "Detected"
                           ).length === 0 && (
-                            <Card.Text>No detected diseases.</Card.Text>
+                            <Card.Text>{t("reports.no_diseases")}</Card.Text>
                           )}
                         </>
                       ) : (
-                        <Card.Text>No model prediction available</Card.Text>
+                        <Card.Text>{t("reports.no_prediction")}</Card.Text>
                       )}
 
                       <Button
@@ -202,7 +215,7 @@ const ReportsList = () => {
                         onClick={() => handleViewDetails(report._id)}
                         disabled={isNavigating}
                       >
-                        View Details
+                        {t("reports.view_details")}
                       </Button>
                     </Card.Body>
                   </Card>

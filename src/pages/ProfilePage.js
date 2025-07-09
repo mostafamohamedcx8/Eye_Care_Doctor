@@ -12,8 +12,10 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import notify from "../Hook/useNotification";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ProfilePage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -101,12 +103,12 @@ const ProfilePage = () => {
 
       // إعادة تعيين وضع التعديل
       toggleEdit(field);
-      notify("Profile updated successfully", "success");
+      notify(t("profilepage.notifications.profileUpdatedSuccess", "success"));
 
       // تحديث الصفحة
       window.location.reload();
     } catch (error) {
-      notify("Error updating profile", "error");
+      notify(t("profilepage.notifications.errorUpdatingProfile", "error"));
     } finally {
       setLoading(false);
     }
@@ -116,20 +118,24 @@ const ProfilePage = () => {
   const handlePasswordChange = async () => {
     const hashedPassword = userFromStorage?.password;
     if (!currentPassword || !newPassword || !confirmPassword) {
-      return notify("Please fill all password fields", "warn");
+      return notify(
+        t("profilepage.notifications.fillAllPasswordFields", "warn")
+      );
     }
 
     if (newPassword !== confirmPassword) {
-      return notify("New password and confirmation do not match", "warn");
+      return notify(t("profilepage.notifications.passwordsDoNotMatch", "warn"));
     }
 
     if (!hashedPassword || !currentPassword) {
-      return notify("Missing stored or entered password", "warn");
+      return notify(t("profilepage.notifications.missingPassword", "warn"));
     }
     const isMatch = await bcrypt.compare(currentPassword, hashedPassword);
 
     if (!isMatch) {
-      return notify("Current password is incorrect", "warn");
+      return notify(
+        t("profilepage.notifications.incorrectCurrentPassword", "warn")
+      );
     }
 
     setloading(true);
@@ -144,14 +150,16 @@ const ProfilePage = () => {
   useEffect(() => {
     if (Loading === false) {
       if (res && res.status === 200) {
-        notify("password changed successfully", "success");
+        notify(
+          t("profilepage.notifications.passwordChangedSuccess", "success")
+        );
         setTimeout(() => {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           navigate("/Login");
         }, 1000);
       } else {
-        notify("Password update failed", "warn");
+        notify(t("profilepage.notifications.passwordUpdateFailed", "warn"));
       }
     }
   }, [Loading]);
@@ -161,13 +169,13 @@ const ProfilePage = () => {
       <NavBar />
 
       <Container className="mt-5 mb-5">
-        <h2 className="mb-4">My Profile</h2>
+        <h2 className="mb-4">{t("profilepage.header.title")}</h2>
         <Row>
           <Col md={8}>
             <Card className="p-4 shadow-sm">
               {/* Full Name */}
               <div className="mb-3">
-                <strong>Full Name</strong> <br />
+                <strong>{t("profilepage.fields.fullName")}</strong> <br />
                 {!editMode.name ? (
                   <div className="d-flex justify-content-between">
                     {firstname} {lastname}
@@ -176,13 +184,15 @@ const ProfilePage = () => {
                       className="p-0"
                       onClick={() => toggleEdit("name")}
                     >
-                      Edit
+                      {t("profilepage.buttons.edit")}
                     </Button>
                   </div>
                 ) : (
                   <>
                     <Form.Group className="mb-2">
-                      <Form.Label>First Name</Form.Label>
+                      <Form.Label>
+                        {t("profilepage.fields.firstName")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={firstname}
@@ -191,7 +201,9 @@ const ProfilePage = () => {
                     </Form.Group>
 
                     <Form.Group className="mb-2">
-                      <Form.Label>Last Name</Form.Label>
+                      <Form.Label>
+                        {t("profilepage.fields.lastName")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={lastname}
@@ -205,7 +217,7 @@ const ProfilePage = () => {
                       onClick={() => handleSubmit("name")}
                       disabled={loading}
                     >
-                      Save
+                      {t("profilepage.buttons.save")}
                     </Button>
                   </>
                 )}
@@ -215,7 +227,7 @@ const ProfilePage = () => {
               {/* Email */}
               <div className="mb-3 d-flex justify-content-between">
                 <div>
-                  <strong>Email</strong> <br />
+                  <strong>{t("profilepage.fields.email")}</strong> <br />
                   {editMode.email ? (
                     <Form.Control
                       type="email"
@@ -236,7 +248,9 @@ const ProfilePage = () => {
                   }
                   disabled={loading}
                 >
-                  {editMode.email ? "Save" : "Edit"}
+                  {editMode.email
+                    ? t("profilepage.buttons.save")
+                    : t("profilepage.buttons.edit")}
                 </Button>
               </div>
               <hr />
@@ -244,7 +258,7 @@ const ProfilePage = () => {
               {/* Password */}
               {/* Password Section */}
               <div className="mb-3">
-                <strong>Password</strong> <br />
+                <strong>{t("profilepage.fields.password")}</strong> <br />
                 {!editMode.password ? (
                   <div className="d-flex justify-content-between">
                     ••••••••
@@ -253,13 +267,15 @@ const ProfilePage = () => {
                       className="p-0"
                       onClick={() => toggleEdit("password")}
                     >
-                      Change
+                      {t("profilepage.buttons.change")}
                     </Button>
                   </div>
                 ) : (
                   <>
                     <Form.Group className="mb-2">
-                      <Form.Label>Current Password</Form.Label>
+                      <Form.Label>
+                        {t("profilepage.fields.currentPassword")}
+                      </Form.Label>
                       <Form.Control
                         type="password"
                         value={currentPassword}
@@ -269,12 +285,14 @@ const ProfilePage = () => {
                         } // Basic validation
                       />
                       <Form.Control.Feedback type="invalid">
-                        Password must be at least 6 characters.
+                        {t("profilepage.notifications.passwordMinLength")}
                       </Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group className="mb-2">
-                      <Form.Label>New Password</Form.Label>
+                      <Form.Label>
+                        {t("profilepage.fields.newPassword")}
+                      </Form.Label>
                       <Form.Control
                         type="password"
                         value={newPassword}
@@ -282,12 +300,14 @@ const ProfilePage = () => {
                         isInvalid={!!newPassword && newPassword.length < 6} // Basic validation
                       />
                       <Form.Control.Feedback type="invalid">
-                        Password must be at least 6 characters.
+                        {t("profilepage.notifications.passwordMinLength")}
                       </Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group className="mb-2">
-                      <Form.Label>Confirm New Password</Form.Label>
+                      <Form.Label>
+                        {t("profilepage.fields.confirmNewPassword")}
+                      </Form.Label>
                       <Form.Control
                         type="password"
                         value={confirmPassword}
@@ -300,8 +320,8 @@ const ProfilePage = () => {
                       />
                       <Form.Control.Feedback type="invalid">
                         {confirmPassword && confirmPassword !== newPassword
-                          ? "Passwords do not match"
-                          : "Password must be at least 6 characters"}
+                          ? t("profilepage.notifications.passwordsMismatch")
+                          : t("profilepage.notifications.passwordMinLength")}
                       </Form.Control.Feedback>
                     </Form.Group>
 
@@ -316,7 +336,9 @@ const ProfilePage = () => {
                           !confirmPassword
                         }
                       >
-                        {loading ? "Saving..." : "Save"}
+                        {loading
+                          ? t("profilepage.buttons.saving")
+                          : t("profilepage.buttons.save")}
                       </Button>
                       <Button
                         variant="link"
@@ -328,7 +350,7 @@ const ProfilePage = () => {
                           toggleEdit("password");
                         }}
                       >
-                        Cancel
+                        {t("profilepage.buttons.cancel")}
                       </Button>
                     </div>
                   </>
@@ -338,7 +360,7 @@ const ProfilePage = () => {
 
               {/* Address */}
               <div className="mb-3">
-                <strong>Address</strong>
+                <strong>{t("profilepage.fields.address")}</strong>
                 {!editMode.address ? (
                   <>
                     <div className="mt-2">
@@ -349,13 +371,13 @@ const ProfilePage = () => {
                       className="p-0"
                       onClick={() => toggleEdit("address")}
                     >
-                      Edit
+                      {t("profilepage.buttons.edit")}
                     </Button>
                   </>
                 ) : (
                   <>
                     <Form.Group className="mt-2">
-                      <Form.Label>State</Form.Label>
+                      <Form.Label>{t("profilepage.fields.state")}</Form.Label>
                       <Form.Select
                         value={selectedState}
                         onChange={(e) => {
@@ -367,7 +389,9 @@ const ProfilePage = () => {
                           setCity("");
                         }}
                       >
-                        <option value="">Select German State</option>
+                        <option value="">
+                          {t("profilepage.fields.selectGermanState")}
+                        </option>
                         {states.map((state) => (
                           <option key={state.isoCode} value={state.isoCode}>
                             {state.name}
@@ -377,13 +401,15 @@ const ProfilePage = () => {
                     </Form.Group>
 
                     <Form.Group className="mt-2">
-                      <Form.Label>City</Form.Label>
+                      <Form.Label>{t("profilepage.fields.city")}</Form.Label>
                       <Form.Select
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         disabled={!selectedState}
                       >
-                        <option value="">Select City</option>
+                        <option value="">
+                          {t("profilepage.fields.selectCity")}
+                        </option>
                         {cities.map((city, i) => (
                           <option key={i}>{city.name}</option>
                         ))}
@@ -391,10 +417,12 @@ const ProfilePage = () => {
                     </Form.Group>
 
                     <Form.Group className="mt-2">
-                      <Form.Label>Full Address</Form.Label>
+                      <Form.Label>
+                        {t("profilepage.fields.fullAddress")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter your address (street...)"
+                        placeholder={t("profilepage.fields.enterAddress")}
                         value={fullAddress}
                         onChange={(e) => setFullAddress(e.target.value)}
                       />
@@ -406,7 +434,7 @@ const ProfilePage = () => {
                       onClick={() => handleSubmit("address")}
                       disabled={loading}
                     >
-                      Save
+                      {t("profilepage.buttons.save")}
                     </Button>
                   </>
                 )}
@@ -427,7 +455,7 @@ const ProfilePage = () => {
               style={{ cursor: "pointer", textDecoration: "underline" }}
               onClick={handleClick}
             >
-              change your profile Image{" "}
+              {t("profilepage.fields.changeProfileImage")}
             </p>
             <input
               type="file"
@@ -441,7 +469,7 @@ const ProfilePage = () => {
               onClick={() => handleSubmit()}
               disabled={loading}
             >
-              Save Image
+              {t("profilepage.buttons.saveImage")}
             </Button>
           </Col>
         </Row>

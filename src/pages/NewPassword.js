@@ -8,8 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Create_New_Password } from "../Redux/actions/Useraction";
 import notify from "../Hook/useNotification";
 import { validationResetPassword } from "../Validations/validateSignupForm";
+import { useTranslation } from "react-i18next";
 
 const NewPasswordSection = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const Navigate = useNavigate();
   const [newpassword, setnewpassword] = useState("");
@@ -23,6 +25,7 @@ const NewPasswordSection = () => {
     const isValid = validationResetPassword({
       newpassword,
       confirmnewPassword,
+      t,
     });
     if (!isValid) return;
     setLoading(true);
@@ -44,19 +47,19 @@ const NewPasswordSection = () => {
     if (loading === false) {
       if (res) {
         if (res.message === "Password reset successfully") {
-          notify("Password reset successfully", "success");
+          notify(t("newPassword.notifySuccess"), "success");
           setTimeout(() => {
             Navigate("/login");
           }, 1000);
         } else if (res.data.message === "Reset code is not verified") {
-          notify("Reset code is not verified", "error");
+          notify(t("newPassword.notifyErrorNotVerified"), "error");
         } else {
-          notify("Request New code", "error");
+          notify(t("newPassword.notifyErrorRequestNew"), "error");
         }
         setLoading(true);
       }
     }
-  }, [loading]);
+  }, [loading, t]);
 
   return (
     <>
@@ -66,12 +69,16 @@ const NewPasswordSection = () => {
           <div className="overlay hero-section">
             <div className="breadcrumb">
               <Link to="/" className="breadcrumb-link">
-                Home
+                {t("newPassword.breadcrumbHome")}
               </Link>
-              <span className="separator">/</span>
-              <span className="active">Reset Password</span>
+              <span className="separator">
+                {t("newPassword.breadcrumbSeparator")}
+              </span>
+              <span className="active">
+                {t("newPassword.breadcrumbResetPassword")}
+              </span>
             </div>
-            <h1 className="title">Reset Your Password</h1>
+            <h1 className="title">{t("newPassword.title")}</h1>
           </div>
         </div>
       </Row>
@@ -83,26 +90,29 @@ const NewPasswordSection = () => {
       >
         <Card style={{ width: "100%", maxWidth: "400px" }}>
           <Card.Body>
-            <h4 className="text-center mb-3">Create a New Password</h4>
+            <h4 className="text-center mb-3">
+              {" "}
+              {t("newPassword.formHeading")}
+            </h4>
             <p className="text-center text-muted mb-4">
-              Your new password must be different from the previous password.
+              {t("newPassword.instructionText")}
             </p>
 
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>New Password</Form.Label>
+                <Form.Label>{t("newPassword.newPasswordLabel")}</Form.Label>
                 <Form.Control
                   type="password"
-                  placeholder="Enter new password"
+                  placeholder={t("newPassword.newPasswordPlaceholder")}
                   value={newpassword}
                   onChange={(e) => setnewpassword(e.target.value)}
                 />
               </Form.Group>
               <Form.Group className="mb-4">
-                <Form.Label>Confirm New Password</Form.Label>
+                <Form.Label>{t("newPassword.confirmPasswordLabel")}</Form.Label>
                 <Form.Control
                   type="password"
-                  placeholder="Confirm new password"
+                  placeholder={t("newPassword.confirmPasswordPlaceholder")}
                   value={confirmnewPassword}
                   onChange={(e) => setConfirmnewPassword(e.target.value)}
                 />
@@ -112,7 +122,7 @@ const NewPasswordSection = () => {
                 variant="primary"
                 className="w-100"
               >
-                Reset Password
+                {t("newPassword.resetButton")}
               </Button>
             </Form>
           </Card.Body>
@@ -121,7 +131,7 @@ const NewPasswordSection = () => {
           loading ? (
             <Spinner animation="border" variant="primary" />
           ) : (
-            <h4> done </h4>
+            <h4> {t("newPassword.done")} </h4>
           )
         ) : null}
       </Container>
