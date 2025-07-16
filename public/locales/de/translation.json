@@ -29,7 +29,8 @@
     "registration": "Registrierung",
     "for_opticians": "Für Optiker",
     "language": "Sprache",
-    "fundus_tooltip": "Verweis auf die Optiker-Website"
+    "fundus_tooltip": "Verweis auf die Optiker-Website",
+    "user_avatar": "User Avatar"
   },
   "herosection": {
     "subtitle": "KI-Diagnosen, von Ärzten überprüft — Intelligentere Entscheidungen für die Augenpflege",
@@ -492,6 +493,42 @@
     "remove_from_archive_tooltip": "Aus Archiv entfernen"
   },
   "examination": {
+    "commonValues": {
+      "Yes": "Ja",
+      "No": "Nein",
+      "Narrow": "Eng",
+      "Within Normal Limits": "Im normalen Bereich",
+      "wide": "Weit"
+    },
+    "ethnicityOptions": {
+      "White and Asian": "Weiß und Asiatisch",
+      "White and Black Caribbean": "Weiß und Schwarz-Karibisch",
+      "White and Black African": "Weiß und Schwarz-Afrikanisch",
+      "Indian": "Indisch",
+      "Pakistani": "Pakistanisch",
+      "Bangladeshi": "Bangladeschisch",
+      "Chinese": "Chinesisch",
+      "Caribbean": "Karibisch",
+      "African": "Afrikanisch",
+      "English, Welsh, Scottish, Northern Irish or British": "Englisch, Walisisch, Schottisch, Nordirisch oder Britisch",
+      "Irish": "Irisch",
+      "Gypsy or Irish Traveller": "Zigeuner oder Irischer Reisender",
+      "Roma": "Roma",
+      "Arab": "Arabisch",
+      "Any other Asian background": "Andere asiatische Herkunft",
+      "Any other Black, Black British, or Caribbean background": "Andere Schwarze, Britisch-Schwarze oder Karibische Herkunft",
+      "Any other Mixed or multiple ethnic background": "Andere gemischte oder mehrere ethnische Herkunft",
+      "Any other White background": "Andere weiße Herkunft",
+      "Any other ethnic group": "Andere ethnische Gruppe"
+    },
+    "salutations": {
+      "Mr": "Herr",
+      "Mrs": "Frau",
+      "Ms": "Fräulein",
+      "Mx": "Divers"
+    },
+    "doctorLabel": "Dr.",
+    "addressLabel": "Adresse",
     "patient_eye_examination_report": "Bericht über die Augenuntersuchung des Patienten",
     "patient_information": "Patienteninformationen",
     "medical_history": "Medizinische Vorgeschichte",
@@ -518,7 +555,7 @@
     "search_select_diagnosis": "Diagnose suchen und auswählen...",
     "submit_right_eye_feedback": "Feedback zum rechten Auge senden",
     "submit_left_eye_feedback": "Feedback zum linken Auge senden",
-    "download_report": "Bericht herunterladen",
+    "download_report": "Bericht drucken",
     "image_capture_date": "Datum der Bildaufnahme:",
     "no_images_available": "Keine Bilder verfügbar",
     "no_detected_diseases_right_eye": "Keine erkannten Krankheiten im rechten Auge.",
@@ -557,6 +594,9 @@
     "left_eye": "Linkes Auge",
     "preview": "Vorschau",
     "right_eye_image": "Bild des rechten Auges",
-    "left_eye_image": "Bild des linken Auges"
+    "left_eye_image": "Bild des linken Auges",
+    "image_quality": "Bildqualität",
+    "image_quality_good": "Gut",
+    "image_quality_bad": "Schlecht"
   }
 }

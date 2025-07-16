@@ -13,7 +13,7 @@ const Home = () => {
       <NavBar />
       <HeroSection />
       <WelcomeSection />
-      <AppPromotionSection />
+      {/* <AppPromotionSection /> */}
       <Footer />
     </div>
   );

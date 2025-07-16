@@ -29,7 +29,8 @@
     "registration": "Registration",
     "for_opticians": "For Opticians",
     "language": "Language",
-    "fundus_tooltip": "refer for optician website"
+    "fundus_tooltip": "refer for optician website",
+    "user_avatar": "User Avatar"
   },
   "herosection": {
     "subtitle": "AI Diagnoses, Doctor-Verified — Smarter Eye Care Decisions",
@@ -73,7 +74,7 @@
       "equipmentProviders": "Medical equipment providers",
       "healthTech": "Health tech companies"
     },
-    "contact": "📩 Contact us at jobs@augenarzt.cloud"
+    "contact": "📩 Contact us at advertise@augenarzt.cloud"
   },
   "career": {
     "breadcrumb": {
@@ -492,6 +493,42 @@
     "remove_from_archive_tooltip": "Remove from Archive"
   },
   "examination": {
+    "commonValues": {
+      "Yes": "Yes",
+      "No": "No",
+      "Narrow": "Narrow",
+      "Within Normal Limits": "Within Normal Limits",
+      "wide": "Wide"
+    },
+    "salutations": {
+      "Mr": "Mr",
+      "Mrs": "Mrs",
+      "Ms": "Ms",
+      "Mx": "Mx"
+    },
+    "ethnicityOptions": {
+      "White and Asian": "White and Asian",
+      "White and Black Caribbean": "White and Black Caribbean",
+      "White and Black African": "White and Black African",
+      "Indian": "Indian",
+      "Pakistani": "Pakistani",
+      "Bangladeshi": "Bangladeshi",
+      "Chinese": "Chinese",
+      "Caribbean": "Caribbean",
+      "African": "African",
+      "English, Welsh, Scottish, Northern Irish or British": "English, Welsh, Scottish, Northern Irish or British",
+      "Irish": "Irish",
+      "Gypsy or Irish Traveller": "Gypsy or Irish Traveller",
+      "Roma": "Roma",
+      "Arab": "Arab",
+      "Any other Asian background": "Any other Asian background",
+      "Any other Black, Black British, or Caribbean background": "Any other Black, Black British, or Caribbean background",
+      "Any other Mixed or multiple ethnic background": "Any other Mixed or multiple ethnic background",
+      "Any other White background": "Any other White background",
+      "Any other ethnic group": "Any other ethnic group"
+    },
+    "doctorLabel": "Dr.",
+    "addressLabel": "Address",
     "patient_eye_examination_report": "Patient Eye Examination Report",
     "patient_information": "Patient Information",
     "medical_history": "Medical History",
@@ -518,7 +555,7 @@
     "search_select_diagnosis": "Search and select diagnosis...",
     "submit_right_eye_feedback": "Submit Right Eye Feedback",
     "submit_left_eye_feedback": "Submit Left Eye Feedback",
-    "download_report": "Download Report",
+    "download_report": "Print Report",
     "image_capture_date": "Image Capture Date:",
     "no_images_available": "No images available",
     "no_detected_diseases_right_eye": "No detected diseases in the right eye.",
@@ -557,6 +594,9 @@
     "left_eye": "Left Eye",
     "preview": "Preview",
     "right_eye_image": "Right Eye Image",
-    "left_eye_image": "Left Eye Image"
+    "left_eye_image": "Left Eye Image",
+    "image_quality": "Image quality",
+    "image_quality_good": "Good",
+    "image_quality_bad": "Bad"
   }
 }

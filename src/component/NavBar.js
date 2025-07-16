@@ -42,7 +42,7 @@ const NavBar = () => {
         <Navbar.Brand href="/">
           <img
             src="/logo.png"
-            alt={t("navbar.logo_alt")}
+            alt={t("navbar.home")}
             style={{ height: "40px" }}
           />
         </Navbar.Brand>
@@ -76,7 +76,7 @@ const NavBar = () => {
                       width="40"
                       height="40"
                       style={{ objectFit: "cover" }}
-                      alt={t("navbar.user_avatar_alt")}
+                      alt={t("navbar.user_avatar")}
                     />
                   }
                   id="user-nav-dropdown"

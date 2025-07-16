@@ -30,6 +30,7 @@ const PatientReport = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const userFromStorage = JSON.parse(localStorage.getItem("user"));
+  console.log(userFromStorage);
   const [showRightEyeFeedback, setShowRightEyeFeedback] = useState(false);
   const DoctorId = userFromStorage._id;
   const [loading, setloading] = useState(true);
@@ -82,32 +83,36 @@ const PatientReport = () => {
 
   const reportRef = useRef();
 
-  const handleDownloadPDF = () => {
-    const element = reportRef.current;
+  // const handleDownloadPDF = () => {
+  //   const element = reportRef.current;
 
-    const opt = {
-      margin: 0,
-      filename: "eye-examination-report.pdf",
-      image: { type: "png", quality: 1.0 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        logging: true,
-        ignoreElements: (el) => {
-          return el.classList?.contains("no-print");
-        },
-      },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    };
+  //   const opt = {
+  //     margin: 0,
+  //     filename: "eye-examination-report.pdf",
+  //     image: { type: "png", quality: 1.0 },
+  //     html2canvas: {
+  //       scale: 2,
+  //       useCORS: true,
+  //       allowTaint: false,
+  //       logging: true,
+  //       ignoreElements: (el) => {
+  //         return el.classList?.contains("no-print");
+  //       },
+  //     },
+  //     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+  //   };
 
-    html2pdf().set(opt).from(element).save();
+  //   html2pdf().set(opt).from(element).save();
+  // };
+  const handlePrint = () => {
+    window.print();
   };
+
   const displayValue = (value) => {
     return value !== undefined && value !== null && value !== "" ? (
       value
     ) : (
-      <span style={{ color: "red" }}>X</span>
+      <span style={{ color: "red" }}>--</span>
     );
   };
 
@@ -115,7 +120,7 @@ const PatientReport = () => {
     return date ? (
       new Date(date).toLocaleDateString("de-DE")
     ) : (
-      <span style={{ color: "red" }}>X</span>
+      <span style={{ color: "red" }}>--</span>
     );
   };
 
@@ -128,7 +133,7 @@ const PatientReport = () => {
         "No"
       )
     ) : (
-      <span style={{ color: "red" }}>X</span>
+      <span style={{ color: "red" }}>--</span>
     );
   };
 
@@ -164,15 +169,41 @@ const PatientReport = () => {
     }
   }, [feedbackSent, res]);
 
+  const doctor_Name = `${userFromStorage.firstname} ${userFromStorage.lastname}`;
+  const doctor_Address = `${userFromStorage.state},${userFromStorage.city},${userFromStorage.fullAddress}`;
+
   return (
     <>
-      <div ref={reportRef}>
+      <div ref={reportRef} className="report-content">
         <Header />
         <NavBar />
         <Container className="mt-5 mb-5 p-4 border rounded shadow bg-light">
-          <h2 className="mb-4 text-center">
-            {t("examination.patient_eye_examination_report")}
-          </h2>
+          <div
+            className="d-flex justify-content-between align-items-center flex-wrap"
+            style={{
+              padding: "10px 20px",
+              borderBottom: "2px solid #ccc",
+              marginBottom: "20px",
+            }}
+          >
+            {/* Optician Info - left */}
+            <div style={{ fontSize: "0.8rem", textAlign: "left" }}>
+              <div>
+                <strong>{t("examination.doctorLabel")}</strong> {doctor_Name}
+              </div>
+              <div>
+                <strong>{t("examination.addressLabel")}:</strong>{" "}
+                {doctor_Address}
+              </div>
+            </div>
+
+            {/* Title - center */}
+            <div className="mx-auto text-center">
+              <h2 style={{ fontWeight: "bold", margin: 0 }}>
+                {t("examination.patient_eye_examination_report")}
+              </h2>
+            </div>
+          </div>
 
           {/* Patient Info */}
           <Card className="mb-4 shadow rounded-2">
@@ -188,11 +219,15 @@ const PatientReport = () => {
                   </div>
                   <div className="mb-2">
                     <strong>{t("examination.salutation")}:</strong>{" "}
-                    {Report?.patient?.salutation}
+                    {t(
+                      `examination.salutations.${Report?.patient?.salutation}`
+                    )}
                   </div>
                   <div className="mb-2">
                     <strong>{t("examination.ethnicity")}:</strong>{" "}
-                    {Report?.patient?.ethnicity}
+                    {t(
+                      `examination.ethnicityOptions.${Report?.patient?.ethnicity}`
+                    )}
                   </div>
                 </Col>
                 <Col md={6}>
@@ -305,9 +340,8 @@ const PatientReport = () => {
                         loading="lazy"
                         alt={`${t("examination.right_eye_image")} ${idx + 1}`}
                         style={{
-                          width: "160px",
-                          height: "160px",
-                          objectFit: "cover",
+                          width: "100%", // أو ممكن تستخدم "auto"
+                          height: "auto",
                           borderRadius: "8px",
                           border: "1px solid #ccc",
                         }}
@@ -386,14 +420,24 @@ const PatientReport = () => {
                 </Col>
                 <Col>
                   <strong>{t("examination.chamber_angle")}</strong>{" "}
-                  {displayValue(Report?.eyeExamination?.rightEye?.chamberAngle)}
+                  {Report?.eyeExamination?.rightEye?.chamberAngle ? (
+                    t(
+                      `examination.commonValues.${Report?.eyeExamination?.rightEye?.chamberAngle}`
+                    )
+                  ) : (
+                    <span style={{ color: "red" }}>--</span>
+                  )}
                 </Col>
               </Row>
               <Row className="mt-2">
                 <Col>
                   <strong>{t("examination.amsler_test_abnormal")}</strong>{" "}
-                  {displayBoolean(
-                    Report?.eyeExamination?.rightEye?.amslerTestAbnormal
+                  {t(
+                    `examination.commonValues.${
+                      Report?.eyeExamination?.rightEye?.amslerTestAbnormal
+                        ? "Yes"
+                        : "No"
+                    }`
                   )}
                 </Col>
               </Row>
@@ -414,6 +458,18 @@ const PatientReport = () => {
 
                     return (
                       <>
+                        <p>
+                          <strong>{t("examination.image_quality")} : </strong>
+                          <span
+                            style={{
+                              color: isImageQualityBad ? "red" : "green",
+                            }}
+                          >
+                            {isImageQualityBad
+                              ? t("examination.image_quality_bad")
+                              : t("examination.image_quality_good")}
+                          </span>
+                        </p>
                         {filteredDiseases.length > 0 ? (
                           <table className="table table-bordered mt-2">
                             <thead>
@@ -457,122 +513,127 @@ const PatientReport = () => {
                   <p>{t("examination.no_prediction_data_right_eye")}</p>
                 )}
               </div>
-              <Card className="mt-4 border-primary">
-                <Card.Header
-                  onClick={() => setShowRightEyeFeedback(!showRightEyeFeedback)}
-                  className="bg-primary text-white d-flex justify-content-between align-items-center"
-                  style={{ cursor: "pointer" }}
-                >
-                  <span>{t("examination.doctor_feedback_right_eye")}</span>
-                  {showRightEyeFeedback ? <ChevronUp /> : <ChevronDown />}
-                </Card.Header>
+              {(Report?.modelResults?.rightEye ||
+                Report?.eyeExamination?.rightEye?.images?.length > 0) && (
+                <Card className="mt-4 border-primary no-print">
+                  <Card.Header
+                    onClick={() =>
+                      setShowRightEyeFeedback(!showRightEyeFeedback)
+                    }
+                    className="bg-primary text-white d-flex justify-content-between align-items-center"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span>{t("examination.doctor_feedback_right_eye")}</span>
+                    {showRightEyeFeedback ? <ChevronUp /> : <ChevronDown />}
+                  </Card.Header>
 
-                {showRightEyeFeedback && (
-                  <Card.Body>
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <strong>
-                          {t("examination.ai_prediction_correct")}
-                        </strong>
-                      </Form.Label>
-                      <Form.Select
-                        value={rightEyeFeedback.aiPredictionCorrect}
-                        onChange={(e) =>
-                          setRightEyeFeedback({
-                            ...rightEyeFeedback,
-                            aiPredictionCorrect: e.target.value,
-                          })
-                        }
+                  {showRightEyeFeedback && (
+                    <Card.Body>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>
+                            {t("examination.ai_prediction_correct")}
+                          </strong>
+                        </Form.Label>
+                        <Form.Select
+                          value={rightEyeFeedback.aiPredictionCorrect}
+                          onChange={(e) =>
+                            setRightEyeFeedback({
+                              ...rightEyeFeedback,
+                              aiPredictionCorrect: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">{t("examination.select")}</option>
+                          <option value="correct">
+                            {t("examination.correct")}
+                          </option>
+                          <option value="incorrect">
+                            {t("examination.incorrect")}
+                          </option>
+                        </Form.Select>
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>{t("examination.comment")}</strong>
+                        </Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={2}
+                          value={rightEyeFeedback.comment}
+                          onChange={(e) =>
+                            setRightEyeFeedback({
+                              ...rightEyeFeedback,
+                              comment: e.target.value,
+                            })
+                          }
+                          placeholder={t(
+                            "examination.enter_right_eye_prediction_opinion"
+                          )}
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>{t("examination.diagnosis")}</strong>
+                        </Form.Label>
+                        <Select
+                          options={diagnosisOptions}
+                          onChange={(selected) =>
+                            setRightEyeFeedback({
+                              ...rightEyeFeedback,
+                              diagnosis: selected ? selected.value : "",
+                            })
+                          }
+                          placeholder={t("examination.search_select_diagnosis")}
+                          isClearable
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>
+                            {t("examination.right_eye_recommended_action")}
+                          </strong>
+                        </Form.Label>
+                        <Form.Select
+                          value={rightEyeFeedback.recommendedAction}
+                          onChange={(e) =>
+                            setRightEyeFeedback({
+                              ...rightEyeFeedback,
+                              recommendedAction: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">
+                            {t("examination.select_an_action")}
+                          </option>
+                          <option value="Refer to Ophthalmologist">
+                            {t("examination.refer_to_ophthalmologist")}
+                          </option>
+                          <option value="Refer to other physicians">
+                            {t("examination.refer_to_other_physicians")}
+                          </option>
+                          <option value="Follow-up in 1 year">
+                            {t("examination.follow_up_in_1_year")}
+                          </option>
+                          <option value="No follow-up required">
+                            {t("examination.no_follow_up_required")}
+                          </option>
+                        </Form.Select>
+                      </Form.Group>
+
+                      <Button
+                        variant="primary"
+                        onClick={(e) => handleSendFeedBack(e)}
                       >
-                        <option value="">{t("examination.select")}</option>
-                        <option value="correct">
-                          {t("examination.correct")}
-                        </option>
-                        <option value="incorrect">
-                          {t("examination.incorrect")}
-                        </option>
-                      </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <strong>{t("examination.comment")}</strong>
-                      </Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={2}
-                        value={rightEyeFeedback.comment}
-                        onChange={(e) =>
-                          setRightEyeFeedback({
-                            ...rightEyeFeedback,
-                            comment: e.target.value,
-                          })
-                        }
-                        placeholder={t(
-                          "examination.enter_right_eye_prediction_opinion"
-                        )}
-                      />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <strong>{t("examination.diagnosis")}</strong>
-                      </Form.Label>
-                      <Select
-                        options={diagnosisOptions}
-                        onChange={(selected) =>
-                          setRightEyeFeedback({
-                            ...rightEyeFeedback,
-                            diagnosis: selected ? selected.value : "",
-                          })
-                        }
-                        placeholder={t("examination.search_select_diagnosis")}
-                        isClearable
-                      />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <strong>
-                          {t("examination.right_eye_recommended_action")}
-                        </strong>
-                      </Form.Label>
-                      <Form.Select
-                        value={rightEyeFeedback.recommendedAction}
-                        onChange={(e) =>
-                          setRightEyeFeedback({
-                            ...rightEyeFeedback,
-                            recommendedAction: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="">
-                          {t("examination.select_an_action")}
-                        </option>
-                        <option value="Refer to Ophthalmologist">
-                          {t("examination.refer_to_ophthalmologist")}
-                        </option>
-                        <option value="Refer to other physicians">
-                          {t("examination.refer_to_other_physicians")}
-                        </option>
-                        <option value="Follow-up in 1 year">
-                          {t("examination.follow_up_in_1_year")}
-                        </option>
-                        <option value="No follow-up required">
-                          {t("examination.no_follow_up_required")}
-                        </option>
-                      </Form.Select>
-                    </Form.Group>
-
-                    <Button
-                      variant="primary"
-                      onClick={(e) => handleSendFeedBack(e)}
-                    >
-                      {t("examination.submit_right_eye_feedback")}
-                    </Button>
-                  </Card.Body>
-                )}
-              </Card>
+                        {t("examination.submit_right_eye_feedback")}
+                      </Button>
+                    </Card.Body>
+                  )}
+                </Card>
+              )}
             </Card.Body>
           </Card>
 
@@ -608,9 +669,8 @@ const PatientReport = () => {
                         loading="lazy"
                         alt={`${t("examination.left_eye_image")} ${idx + 1}`}
                         style={{
-                          width: "160px",
-                          height: "160px",
-                          objectFit: "cover",
+                          width: "100%", // أو ممكن تستخدم "auto"
+                          height: "auto",
                           borderRadius: "8px",
                           border: "1px solid #ccc",
                         }}
@@ -687,14 +747,24 @@ const PatientReport = () => {
                 </Col>
                 <Col>
                   <strong>{t("examination.chamber_angle")}</strong>{" "}
-                  {displayValue(Report?.eyeExamination?.leftEye?.chamberAngle)}
+                  {Report?.eyeExamination?.leftEye?.chamberAngle ? (
+                    t(
+                      `examination.commonValues.${Report?.eyeExamination?.leftEye?.chamberAngle}`
+                    )
+                  ) : (
+                    <span style={{ color: "red" }}>--</span>
+                  )}
                 </Col>
               </Row>
               <Row className="mt-2">
                 <Col>
                   <strong>{t("examination.amsler_test_abnormal")}</strong>{" "}
-                  {displayBoolean(
-                    Report?.eyeExamination?.leftEye?.amslerTestAbnormal
+                  {t(
+                    `examination.commonValues.${
+                      Report?.eyeExamination?.leftEye?.amslerTestAbnormal
+                        ? "Yes"
+                        : "No"
+                    }`
                   )}
                 </Col>
               </Row>
@@ -715,6 +785,18 @@ const PatientReport = () => {
 
                     return (
                       <>
+                        <p>
+                          <strong>{t("examination.image_quality")} : </strong>
+                          <span
+                            style={{
+                              color: isImageQualityBad ? "red" : "green",
+                            }}
+                          >
+                            {isImageQualityBad
+                              ? t("examination.image_quality_bad")
+                              : t("examination.image_quality_good")}
+                          </span>
+                        </p>
                         {filteredDiseases.length > 0 ? (
                           <table className="table table-bordered mt-2">
                             <thead>
@@ -758,125 +840,128 @@ const PatientReport = () => {
                   <p>{t("examination.no_prediction_data_left_eye")}</p>
                 )}
               </div>
-              <Card className="mt-4 border-primary">
-                <Card.Header
-                  onClick={() => setShowLeftEyeFeedback(!showLeftEyeFeedback)}
-                  className="bg-primary text-white d-flex justify-content-between align-items-center"
-                  style={{ cursor: "pointer" }}
-                >
-                  <span>{t("examination.doctor_feedback_left_eye")}</span>
-                  {showLeftEyeFeedback ? <ChevronUp /> : <ChevronDown />}
-                </Card.Header>
+              {(Report?.modelResults?.leftEye ||
+                Report?.eyeExamination?.leftEye?.images?.length > 0) && (
+                <Card className="mt-4 border-primary no-print">
+                  <Card.Header
+                    onClick={() => setShowLeftEyeFeedback(!showLeftEyeFeedback)}
+                    className="bg-primary text-white d-flex justify-content-between align-items-center"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span>{t("examination.doctor_feedback_left_eye")}</span>
+                    {showLeftEyeFeedback ? <ChevronUp /> : <ChevronDown />}
+                  </Card.Header>
 
-                {showLeftEyeFeedback && (
-                  <Card.Body>
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <strong>
-                          {t("examination.ai_prediction_correct")}
-                        </strong>
-                      </Form.Label>
-                      <Form.Select
-                        value={leftEyeFeedback.aiPredictionCorrect}
-                        onChange={(e) =>
-                          setLeftEyeFeedback({
-                            ...leftEyeFeedback,
-                            aiPredictionCorrect: e.target.value,
-                          })
-                        }
+                  {showLeftEyeFeedback && (
+                    <Card.Body>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>
+                            {t("examination.ai_prediction_correct")}
+                          </strong>
+                        </Form.Label>
+                        <Form.Select
+                          value={leftEyeFeedback.aiPredictionCorrect}
+                          onChange={(e) =>
+                            setLeftEyeFeedback({
+                              ...leftEyeFeedback,
+                              aiPredictionCorrect: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">{t("examination.select")}</option>
+                          <option value="correct">
+                            {t("examination.correct")}
+                          </option>
+                          <option value="incorrect">
+                            {t("examination.incorrect")}
+                          </option>
+                        </Form.Select>
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>{t("examination.comment")}</strong>
+                        </Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={2}
+                          value={leftEyeFeedback.comment}
+                          onChange={(e) =>
+                            setLeftEyeFeedback({
+                              ...leftEyeFeedback,
+                              comment: e.target.value,
+                            })
+                          }
+                          placeholder={t(
+                            "examination.enter_left_eye_prediction_opinion"
+                          )}
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>{t("examination.diagnosis")}</strong>
+                        </Form.Label>
+                        <Select
+                          options={diagnosisOptions}
+                          onChange={(selected) =>
+                            setLeftEyeFeedback({
+                              ...leftEyeFeedback,
+                              diagnosis: selected ? selected.value : "",
+                            })
+                          }
+                          placeholder={t("examination.search_select_diagnosis")}
+                          isClearable
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>{t("examination.recommended_action")}</strong>
+                        </Form.Label>
+                        <Form.Select
+                          value={leftEyeFeedback.recommendedAction}
+                          onChange={(e) =>
+                            setLeftEyeFeedback({
+                              ...leftEyeFeedback,
+                              recommendedAction: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">
+                            {t("examination.select_an_action")}
+                          </option>
+                          <option value="Refer to Ophthalmologist">
+                            {t("examination.refer_to_ophthalmologist")}
+                          </option>
+                          <option value="Refer to other physicians">
+                            {t("examination.refer_to_other_physicians")}
+                          </option>
+                          <option value="Follow-up in 1 year">
+                            {t("examination.follow_up_in_1_year")}
+                          </option>
+                          <option value="No follow-up required">
+                            {t("examination.no_follow_up_required")}
+                          </option>
+                        </Form.Select>
+                      </Form.Group>
+
+                      <Button
+                        variant="primary"
+                        onClick={(e) => handleSendFeedBack(e)}
                       >
-                        <option value="">{t("examination.select")}</option>
-                        <option value="correct">
-                          {t("examination.correct")}
-                        </option>
-                        <option value="incorrect">
-                          {t("examination.incorrect")}
-                        </option>
-                      </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <strong>{t("examination.comment")}</strong>
-                      </Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={2}
-                        value={leftEyeFeedback.comment}
-                        onChange={(e) =>
-                          setLeftEyeFeedback({
-                            ...leftEyeFeedback,
-                            comment: e.target.value,
-                          })
-                        }
-                        placeholder={t(
-                          "examination.enter_left_eye_prediction_opinion"
-                        )}
-                      />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <strong>{t("examination.diagnosis")}</strong>
-                      </Form.Label>
-                      <Select
-                        options={diagnosisOptions}
-                        onChange={(selected) =>
-                          setLeftEyeFeedback({
-                            ...leftEyeFeedback,
-                            diagnosis: selected ? selected.value : "",
-                          })
-                        }
-                        placeholder={t("examination.search_select_diagnosis")}
-                        isClearable
-                      />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <strong>{t("examination.recommended_action")}</strong>
-                      </Form.Label>
-                      <Form.Select
-                        value={leftEyeFeedback.recommendedAction}
-                        onChange={(e) =>
-                          setLeftEyeFeedback({
-                            ...leftEyeFeedback,
-                            recommendedAction: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="">
-                          {t("examination.select_an_action")}
-                        </option>
-                        <option value="Refer to Ophthalmologist">
-                          {t("examination.refer_to_ophthalmologist")}
-                        </option>
-                        <option value="Refer to other physicians">
-                          {t("examination.refer_to_other_physicians")}
-                        </option>
-                        <option value="Follow-up in 1 year">
-                          {t("examination.follow_up_in_1_year")}
-                        </option>
-                        <option value="No follow-up required">
-                          {t("examination.no_follow_up_required")}
-                        </option>
-                      </Form.Select>
-                    </Form.Group>
-
-                    <Button
-                      variant="primary"
-                      onClick={(e) => handleSendFeedBack(e)}
-                    >
-                      {t("examination.submit_left_eye_feedback")}
-                    </Button>
-                  </Card.Body>
-                )}
-              </Card>
+                        {t("examination.submit_left_eye_feedback")}
+                      </Button>
+                    </Card.Body>
+                  )}
+                </Card>
+              )}
             </Card.Body>
           </Card>
 
           <div className="d-flex justify-content-center mt-4 gap-3">
-            <Button onClick={handleDownloadPDF} variant="danger">
+            <Button onClick={handlePrint} variant="danger" className="no-print">
               {t("examination.download_report")}
             </Button>
           </div>
