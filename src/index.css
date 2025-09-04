@@ -36,8 +36,8 @@
 }
 
 .hero-section {
-  background: url("E:/cv/eyecare/eyecare/public/Untitled.jpeg") center/cover
-    no-repeat;
+  background: url("/home/joe/Eye_Care_FrontEnd/public/Untitled.jpeg")
+    center/cover no-repeat;
   min-height: 30vh; /* بدل 80vh، خليه أصغر */
   position: relative;
   display: flex;
@@ -129,7 +129,7 @@
 }
 .app-promotion-section {
   background-color: #1e90ff;
-  background-image: url("E:\بروجيكت التخرج\eyecareDoctor\public\banner-pattern.svg"); /* بإمكانك استبدال هذا بباترن طبي أو صورة SVG */
+  background-image: url("/home/joe/Eye_Care_FrontEnd/public/banner-pattern.svg"); /* بإمكانك استبدال هذا بباترن طبي أو صورة SVG */
   padding: 0px 0;
   color: white;
 }

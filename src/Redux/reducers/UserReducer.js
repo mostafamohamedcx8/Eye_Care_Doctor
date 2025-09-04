@@ -7,6 +7,7 @@ import {
   UPDATE_USER_PROFILE,
   UPDATELOGGEDUSERPASSWORD,
   CREATE_FEEDBACK,
+  GETMYDATA,
 } from "../type";
 
 const initial = {
@@ -18,6 +19,7 @@ const initial = {
   createNewPassword: [],
   userpassword: [],
   feedback: [],
+  mydata: [],
   error: null, // أضف حقل للخطأ
   loading: true,
 };
@@ -34,6 +36,12 @@ const userReducer = (state = initial, action) => {
       return {
         ...state,
         loginUser: action.payload,
+        loading: false,
+      };
+    case GETMYDATA:
+      return {
+        ...state,
+        mydata: action.payload,
         loading: false,
       };
     case FORGETPASSWORD:

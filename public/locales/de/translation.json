@@ -234,6 +234,8 @@
     "date_of_birth_label": "Geburtsdatum",
     "day_option": "Tag",
     "month_option": "Monat",
+    "phone_number": "Telefonnummer",
+    "phone_number_placeholder": "Geben Sie Ihre Telefonnummer ein",
     "months": [
       "Januar",
       "Februar",
@@ -333,7 +335,8 @@
     "notifyStateRequired": "Bundesland ist erforderlich",
     "notifyCityRequired": "Stadt ist erforderlich",
     "notifyPostalCodeInvalid": "Postleitzahl muss genau 5 Ziffern enthalten",
-    "notifyFullAddressRequired": "Vollständige Adresse ist erforderlich"
+    "notifyFullAddressRequired": "Vollständige Adresse ist erforderlich",
+    "notifyPhoneNumberInvalid": "Telefonnummer muss deutsch (+49...) oder US (+1...) sein"
   },
   "newPassword": {
     "breadcrumbHome": "Startseite",
@@ -499,6 +502,36 @@
       "Narrow": "Eng",
       "Within Normal Limits": "Im normalen Bereich",
       "wide": "Weit"
+    },
+    "medicalHistory": {
+      "header": "Medizinische Vorgeschichte",
+      "hasCondition": "Hat Zustand",
+      "appliesTo": "Gilt für",
+      "sinceWhen": "Seit wann",
+      "hba1cValue": "Letzter HbA1c-Wert",
+      "hba1cDate": "Letztes HbA1c-Datum",
+      "diabetesTreatment": "Diabetesbehandlung",
+      "diabetes": {
+        "sinceWhen": "Seit wann",
+        "hba1cDate": "HbA1c-Datum",
+        "hba1cValue": "HbA1c-Wert",
+        "treatment": "Behandlung"
+      },
+      "values": {
+        "Yes": "Ja",
+        "No": "Nein",
+        "Self": "Selbst",
+        "In Family": "In der Familie",
+        "Diabetes M.": "Diabetes mellitus",
+        "Hypertension": "Bluthochdruck",
+        "Rheumatic diseases": "Rheumatische Erkrankungen",
+        "Thyroid": "Schilddrüse",
+        "Tumours": "Tumore",
+        "Genetic": "Genetisch",
+        "Cataract": "Katarakt (Grauer Star)",
+        "Glaucoma": "Grüner Star (Glaukom)",
+        "Age-related macular degeneration": "Altersbedingte Makuladegeneration"
+      }
     },
     "ethnicityOptions": {
       "White and Asian": "Weiß und Asiatisch",

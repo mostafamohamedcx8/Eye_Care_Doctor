@@ -55,7 +55,10 @@ const SignupSection = () => {
   const [fullAddress, setFullAddress] = useState("");
   const [loading, setloading] = useState(true);
   const [ispress, setispress] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [countryCode, setCountryCode] = useState("+49");
   const User = useSelector((state) => state.alluser.User);
+  const fullPhoneNumber = countryCode + phoneNumber;
 
   const resetFormFields = () => {
     setFirstname("");
@@ -63,6 +66,7 @@ const SignupSection = () => {
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+    setPhoneNumber("");
     setsalutation("");
     setDateOfBirthDay(t("signupsection.day_option"));
     setDateOfBirthMonth(t("signupsection.month_option"));
@@ -83,6 +87,7 @@ const SignupSection = () => {
       email,
       password,
       passwordConfirm: confirmPassword,
+      phoneNumber,
       dateOfBirthDay,
       dateOfBirthMonth,
       dateOfBirthYear,
@@ -92,6 +97,7 @@ const SignupSection = () => {
       state: selectedState,
       city: selectedcity,
       fullAddress,
+      countryCode,
       t,
     });
 
@@ -130,6 +136,7 @@ const SignupSection = () => {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("passwordConfirm", confirmPassword);
+    formData.append("phoneNumber", fullPhoneNumber);
     formData.append("Specialty", specialty);
     formData.append("salutation", salutation);
     formData.append("state", stateName);
@@ -149,6 +156,8 @@ const SignupSection = () => {
       email,
       password,
       passwordConfirm: confirmPassword,
+      phoneNumber,
+      countryCode,
       dateOfBirthDay,
       dateOfBirthMonth,
       dateOfBirthYear,
@@ -355,6 +364,34 @@ const SignupSection = () => {
                 </option>
               ))}
             </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-4">
+            <Form.Label>{t("signupsection.phone_number")}</Form.Label>
+            <div className="d-flex">
+              {/* ✅ Dropdown لاختيار الدولة */}
+              <Form.Select
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
+                style={{ maxWidth: "120px", marginRight: "8px" }}
+              >
+                <option value="+49">🇩🇪 +49</option>
+                <option value="+1">🇺🇸 +1</option>
+              </Form.Select>
+
+              {/* ✅ Input لرقم الهاتف */}
+              <Form.Control
+                type="tel"
+                placeholder={t("signupsection.phone_number_placeholder")}
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+            </div>
+            <Form.Text className="text-muted">
+              {countryCode === "+49"
+                ? "+49XXXXXXXXXX (Germany)"
+                : "+1XXXXXXXXXX (USA)"}
+            </Form.Text>
           </Form.Group>
 
           {/* العنوان */}

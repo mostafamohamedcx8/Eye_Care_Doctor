@@ -9,6 +9,7 @@ import {
   UPDATE_USER_PROFILE,
   UPDATELOGGEDUSERPASSWORD,
   CREATE_FEEDBACK,
+  GETMYDATA,
 } from "../type";
 import { InsertData, InsertDataWithImage } from "../../Hooks/useInsertData";
 import {
@@ -16,6 +17,7 @@ import {
   UpdateDataWithImage,
   updateDataWithToken,
 } from "../../Hooks/useUpdateData";
+import { useGetDataToken } from "../../Hooks/useGetData";
 
 export const CreateUser = (MYdata) => async (dispatch) => {
   try {
@@ -105,7 +107,7 @@ export const ForgetPassword = (MYdata) => async (dispatch) => {
 export const verifyEmailCode = (token) => async (dispatch) => {
   try {
     const res = await axios.post(
-      "http://localhost:8000/api/v1/auth/verifyemailcode",
+      "https://backend.auge.cloud/api/v1/auth/verifyemailcode",
       {
         token: token,
       }
@@ -175,6 +177,22 @@ export const CreateFeedBack = (body, id) => async (dispatch) => {
   } catch (e) {
     dispatch({
       type: CREATE_FEEDBACK,
+      payload: e.response,
+    });
+  }
+};
+
+export const getUserData = () => async (dispatch) => {
+  try {
+    const response = await useGetDataToken(`/api/v1/user/getMe`);
+
+    dispatch({
+      type: GETMYDATA,
+      payload: response,
+    });
+  } catch (e) {
+    dispatch({
+      type: GETMYDATA,
       payload: e.response,
     });
   }

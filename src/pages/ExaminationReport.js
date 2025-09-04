@@ -258,20 +258,76 @@ const PatientReport = () => {
               <ListGroup>
                 {Report?.history?.medical?.map((disease, idx) => (
                   <ListGroup.Item key={idx}>
-                    <div className="d-flex justify-content-between">
-                      <strong>{disease.name}</strong>
-                      <div className="ms-3">
-                        <span>
-                          <strong>{t("examination.has_condition")}</strong>{" "}
-                          {disease.hasCondition
-                            ? t("examination.yes")
-                            : t("examination.no")}
-                        </span>
-                        <span className="ms-3">
-                          <strong>{t("examination.applies_to")}</strong>{" "}
-                          {disease.appliesTo}
-                        </span>
+                    <div className="d-flex flex-column">
+                      <div className="d-flex justify-content-between">
+                        <strong>
+                          {t(
+                            `examination.medicalHistory.values.${disease.name}`
+                          )}
+                        </strong>
+                        <div className="ms-3">
+                          <span>
+                            <strong>
+                              {t("examination.medicalHistory.hasCondition")}:
+                            </strong>{" "}
+                            {t(
+                              `examination.medicalHistory.values.${
+                                disease.hasCondition ? "Yes" : "No"
+                              }`
+                            )}
+                          </span>
+                          <span className="ms-3">
+                            <strong>
+                              {t("examination.medicalHistory.appliesTo")}:
+                            </strong>{" "}
+                            {t(
+                              `examination.medicalHistory.values.${disease.appliesTo}`
+                            )}
+                          </span>
+                        </div>
                       </div>
+
+                      {/* ✅ عرض التفاصيل الإضافية لو المرض هو Diabetes M. */}
+                      {disease.name === "Diabetes M." && (
+                        <div className="d-flex flex-wrap mt-2">
+                          <span className="me-3">
+                            <strong>
+                              {t(
+                                "examination.medicalHistory.diabetes.sinceWhen"
+                              )}
+                              :
+                            </strong>{" "}
+                            {disease.sinceWhen}
+                          </span>
+                          <span className="me-3">
+                            <strong>
+                              {t(
+                                "examination.medicalHistory.diabetes.hba1cDate"
+                              )}
+                              :
+                            </strong>{" "}
+                            {new Date(disease.hba1cDate).toLocaleDateString()}
+                          </span>
+                          <span className="me-3">
+                            <strong>
+                              {t(
+                                "examination.medicalHistory.diabetes.hba1cValue"
+                              )}
+                              :
+                            </strong>{" "}
+                            {disease.hba1cValue}
+                          </span>
+                          <span className="me-3">
+                            <strong>
+                              {t(
+                                "examination.medicalHistory.diabetes.treatment"
+                              )}
+                              :
+                            </strong>{" "}
+                            {disease.diabetesTreatment}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </ListGroup.Item>
                 ))}

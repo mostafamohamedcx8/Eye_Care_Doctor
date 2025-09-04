@@ -234,6 +234,8 @@
     "date_of_birth_label": "Date of Birth",
     "day_option": "Day",
     "month_option": "Month",
+    "phone_number": "Phone Number",
+    "phone_number_placeholder": "Enter your phone number",
     "months": [
       "January",
       "February",
@@ -333,7 +335,8 @@
     "notifyStateRequired": "State is required",
     "notifyCityRequired": "City is required",
     "notifyPostalCodeInvalid": "Postal Code must be exactly 5 digits",
-    "notifyFullAddressRequired": "Full address is required"
+    "notifyFullAddressRequired": "Full address is required",
+    "notifyPhoneNumberInvalid": "Phone number must be German (+49...) or US (+1...)"
   },
   "newPassword": {
     "breadcrumbHome": "Home",
@@ -499,6 +502,36 @@
       "Narrow": "Narrow",
       "Within Normal Limits": "Within Normal Limits",
       "wide": "Wide"
+    },
+    "medicalHistory": {
+      "diabetes": {
+        "sinceWhen": "Since When",
+        "hba1cDate": "HbA1c Date",
+        "hba1cValue": "HbA1c Value",
+        "treatment": "Treatment"
+      },
+      "header": "Medical History",
+      "hasCondition": "Has Condition",
+      "appliesTo": "Applies To",
+      "sinceWhen": "Since when",
+      "hba1cValue": "Last HbA1c value",
+      "hba1cDate": "Last HbA1c date",
+      "diabetesTreatment": "Diabetes treatment",
+      "values": {
+        "Yes": "Yes",
+        "No": "No",
+        "Self": "Self",
+        "In Family": "In Family",
+        "Diabetes M.": "Diabetes M.",
+        "Hypertension": "Hypertension",
+        "Rheumatic diseases": "Rheumatic diseases",
+        "Thyroid": "Thyroid",
+        "Tumours": "Tumours",
+        "Genetic": "Genetic",
+        "Cataract": "Cataract",
+        "Glaucoma": "Glaucoma",
+        "Age-related macular degeneration": "Age-related macular degeneration"
+      }
     },
     "salutations": {
       "Mr": "Mr",

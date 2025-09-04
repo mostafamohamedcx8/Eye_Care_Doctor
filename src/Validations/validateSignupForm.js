@@ -12,6 +12,7 @@ export const validateSignupForm = ({
   email,
   password,
   passwordConfirm,
+  phoneNumber,
   dateOfBirthDay,
   dateOfBirthMonth,
   dateOfBirthYear,
@@ -20,6 +21,7 @@ export const validateSignupForm = ({
   city,
   fullAddress,
   postalCode,
+  countryCode,
   t, // Add t as a parameter
 }) => {
   if (!firstname.trim()) {
@@ -50,6 +52,24 @@ export const validateSignupForm = ({
   if (password !== passwordConfirm) {
     notify(t("Signupvalidation.notifyPasswordsMismatch"), "warn");
     return false;
+  }
+  if (!phoneNumber) {
+    notify(t("Signupvalidation.notifyPhoneNumberInvalid"), "warn");
+    return false;
+  }
+
+  if (countryCode === "+49") {
+    // أرقام ألمانيا عادة 10 - 12 رقم بعد الكود
+    if (!/^\d{10,12}$/.test(phoneNumber)) {
+      notify(t("Signupvalidation.notifyPhoneNumberInvalid"), "warn");
+      return false;
+    }
+  } else if (countryCode === "+1") {
+    // أرقام أمريكا لازم 10 أرقام بعد الكود
+    if (!/^\d{10}$/.test(phoneNumber)) {
+      notify(t("Signupvalidation.notifyPhoneNumberInvalid"), "warn");
+      return false;
+    }
   }
   if (!dateOfBirthDay || !dateOfBirthMonth || !dateOfBirthYear) {
     notify(t("Signupvalidation.notifyDateOfBirthRequired"), "warn");

@@ -8,6 +8,7 @@ import bcrypt from "bcryptjs";
 import {
   updateUserProfileData,
   UpdateLoggedUserPassword,
+  getUserData,
 } from "../Redux/actions/Useraction";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "../Hook/useNotification";
@@ -18,8 +19,13 @@ const ProfilePage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  useEffect(() => {
+    dispatch(getUserData());
+  }, []);
 
   const userFromStorage = JSON.parse(localStorage.getItem("user")) || {};
+  const MYData = useSelector((state) => state.alluser.mydata);
+  const userimage = MYData?.data?.imageProfile;
 
   const [firstname, setFirstname] = useState(userFromStorage.firstname || "");
   const [lastname, setLastname] = useState(userFromStorage.lastname || "");
@@ -445,7 +451,7 @@ const ProfilePage = () => {
           {/* Profile Image */}
           <Col md={4} className="text-center">
             <img
-              src={image}
+              src={userimage || "/profile.jpg"}
               alt="Profile"
               className="rounded-circle mb-3"
               style={{ width: "120px", height: "120px", objectFit: "cover" }}
